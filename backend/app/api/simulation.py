@@ -1,6 +1,6 @@
 """
-Simulation-related API routes
-Step2: Entity reading and filtering, OASIS simulation preparation and execution (fully automated)
+模拟相关 API 路由
+步骤2：实体读取和过滤，OASIS 模拟准备和执行（全自动化）
 """
 
 import os
@@ -19,52 +19,52 @@ from ..models.project import ProjectManager
 logger = get_logger('mirofish.api.simulation')
 
 
-# Interview prompt optimization prefix
-# Adding this prefix can prevent agents from calling tools and reply directly with text
+# 访谈提示优化前缀
+# 添加此前缀可以防止 agent 调用工具，直接以文本回复
 INTERVIEW_PROMPT_PREFIX = "结合你的人设、所有的过往记忆与行动，不调用任何工具直接用文本回复我："
 
 
 def optimize_interview_prompt(prompt: str) -> str:
     """
-    Optimize Interview questions, add prefix to avoid agent calling tools
+    优化访谈问题，添加前缀以避免 agent 调用工具
     
     Args:
-        prompt: Original question
+        prompt: 原始问题
         
     Returns:
-        Optimized question
+        优化后的问题
     """
     if not prompt:
         return prompt
-    # Avoid adding prefix repeatedly
+    # 避免重复添加前缀
     if prompt.startswith(INTERVIEW_PROMPT_PREFIX):
         return prompt
     return f"{INTERVIEW_PROMPT_PREFIX}{prompt}"
 
 
-# ============== Entity reading interface ==============
+# ============== 实体读取接口 ==============
 
 @simulation_bp.route('/entities/<graph_id>', methods=['GET'])
 def get_graph_entities(graph_id: str):
     """
-    Get all entities from the knowledge graph (filtered)
+    从知识图谱获取所有实体（已过滤）
     
-    Only return nodes that match predefined entity types (nodes whose Labels are not just Entity)
+    仅返回匹配预定义实体类型的节点（Label 不只是 Entity 的节点）
     
-    Query parameters:
-        entity_types: comma-separated list of entity types (optional, for further filtering)
-        enrich: whether to get related edge information (default true)
+    查询参数：
+        entity_types: 逗号分隔的实体类型列表（可选，用于进一步过滤）
+        enrich: 是否获取相关边信息（默认 true）
     """
     try:
         entity_types_str = request.args.get('entity_types', '')
         entity_types = [t.strip() for t in entity_types_str.split(',') if t.strip()] if entity_types_str else None
         enrich = request.args.get('enrich', 'true').lower() == 'true'
         
-        logger.info(f"Get knowledge graph entities: graph_id={graph_id}, entity_types={entity_types}, enrich={enrich}")
+        logger.info(f"获取知识图谱实体: graph_id={graph_id}, entity_types={entity_types}, enrich={enrich}")
         
         storage = current_app.extensions.get('neo4j_storage')
         if not storage:
-            raise ValueError("GraphStorage not initialized")
+            raise ValueError("GraphStorage 未初始化")
         reader = EntityReader(storage)
         result = reader.filter_defined_entities(
             graph_id=graph_id,
@@ -78,7 +78,7 @@ def get_graph_entities(graph_id: str):
         })
         
     except Exception as e:
-        logger.error(f"Failed to get knowledge graph entities: {str(e)}")
+        logger.error(f"获取知识图谱实体失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -88,18 +88,18 @@ def get_graph_entities(graph_id: str):
 
 @simulation_bp.route('/entities/<graph_id>/<entity_uuid>', methods=['GET'])
 def get_entity_detail(graph_id: str, entity_uuid: str):
-    """Get detailed information of a single entity"""
+    """获取单个实体的详细信息"""
     try:
         storage = current_app.extensions.get('neo4j_storage')
         if not storage:
-            raise ValueError("GraphStorage not initialized")
+            raise ValueError("GraphStorage 未初始化")
         reader = EntityReader(storage)
         entity = reader.get_entity_with_context(graph_id, entity_uuid)
         
         if not entity:
             return jsonify({
                 "success": False,
-                "error": f"Entity does not exist: {entity_uuid}"
+                "error": f"实体不存在: {entity_uuid}"
             }), 404
         
         return jsonify({
@@ -108,7 +108,7 @@ def get_entity_detail(graph_id: str, entity_uuid: str):
         })
         
     except Exception as e:
-        logger.error(f"Failed to get entity details: {str(e)}")
+        logger.error(f"获取实体详情失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -118,13 +118,13 @@ def get_entity_detail(graph_id: str, entity_uuid: str):
 
 @simulation_bp.route('/entities/<graph_id>/by-type/<entity_type>', methods=['GET'])
 def get_entities_by_type(graph_id: str, entity_type: str):
-    """Get all entities of specified type"""
+    """获取指定类型的所有实体"""
     try:
         enrich = request.args.get('enrich', 'true').lower() == 'true'
         
         storage = current_app.extensions.get('neo4j_storage')
         if not storage:
-            raise ValueError("GraphStorage not initialized")
+            raise ValueError("GraphStorage 未初始化")
         reader = EntityReader(storage)
         entities = reader.get_entities_by_type(
             graph_id=graph_id,
@@ -142,7 +142,7 @@ def get_entities_by_type(graph_id: str, entity_type: str):
         })
         
     except Exception as e:
-        logger.error(f"Failed to get entities: {str(e)}")
+        logger.error(f"获取实体失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -150,24 +150,24 @@ def get_entities_by_type(graph_id: str, entity_type: str):
         }), 500
 
 
-# ============== Simulation management interface ==============
+# ============== 模拟管理接口 ==============
 
 @simulation_bp.route('/create', methods=['POST'])
 def create_simulation():
     """
-    Create new simulation
+    创建新模拟
     
-    Note: parameters like max_rounds are intelligently generated by LLM, no manual setting needed
+    注意：max_rounds 等参数由 LLM 智能生成，无需手动设置
     
-    Request (JSON):
+    请求 (JSON):
         {
-            "project_id": "proj_xxxx",      // Required
-            "graph_id": "mirofish_xxxx",    // Optional, if not provided, get from project
-            "enable_twitter": true,          // Optional, default true
-            "enable_reddit": true            // Optional, default true
+            "project_id": "proj_xxxx",      // 必填
+            "graph_id": "mirofish_xxxx",    // 可选，如未提供则从项目获取
+            "enable_twitter": true,          // 可选，默认 true
+            "enable_reddit": true            // 可选，默认 true
         }
     
-    Returns:
+    返回:
         {
             "success": true,
             "data": {
@@ -188,21 +188,21 @@ def create_simulation():
         if not project_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide project_id"
+                "error": "请提供 project_id"
             }), 400
         
         project = ProjectManager.get_project(project_id)
         if not project:
             return jsonify({
                 "success": False,
-                "error": f"Project does not exist: {project_id}"
+                "error": f"项目不存在: {project_id}"
             }), 404
         
         graph_id = data.get('graph_id') or project.graph_id
         if not graph_id:
             return jsonify({
                 "success": False,
-                "error": "Project has not built knowledge graph yet, please call /api/graph/build first"
+                "error": "项目尚未构建知识图谱，请先调用 /api/graph/build"
             }), 400
         
         manager = SimulationManager()
@@ -219,7 +219,7 @@ def create_simulation():
         })
         
     except Exception as e:
-        logger.error(f"Failed to create simulation: {str(e)}")
+        logger.error(f"创建模拟失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -349,41 +349,41 @@ def _check_simulation_prepared(simulation_id: str) -> tuple:
 @simulation_bp.route('/prepare', methods=['POST'])
 def prepare_simulation():
     """
-    Prepare simulation environment (async task with LLM intelligent configuration generation).
+    准备模拟环境（异步任务，LLM 智能配置生成）。
 
-    This is a time-consuming operation. The interface returns immediately with a task_id.
-    Use GET /api/simulation/prepare/status to query progress.
+    这是一个耗时操作。接口立即返回 task_id。
+    使用 GET /api/simulation/prepare/status 查询进度。
 
-    Features:
-    - Automatically detect completed preparations to avoid duplicate generation
-    - If already prepared, return existing results directly
-    - Support forced regeneration (force_regenerate=true)
+    功能：
+    - 自动检测已完成的准备，避免重复生成
+    - 如果已准备，直接返回现有结果
+    - 支持强制重新生成 (force_regenerate=true)
 
-    Steps:
-    1. Check if preparation is already complete
-    2. Read and filter entities from knowledge graph
-    3. Generate OASIS Agent Profile for each entity (with retry mechanism)
-    4. LLM intelligently generates simulation configuration (with retry mechanism)
-    5. Save configuration files and preset scripts
+    步骤：
+    1. 检查准备是否已完成
+    2. 从知识图谱读取并过滤实体
+    3. 为每个实体生成 OASIS Agent Profile（带重试机制）
+    4. LLM 智能生成模拟配置（带重试机制）
+    5. 保存配置文件和预设脚本
     
-    Request (JSON):
+    请求 (JSON):
         {
-            "simulation_id": "sim_xxxx",                   // Required，Simulation ID
-            "entity_types": ["Student", "PublicFigure"],  // Optional，Specified entity type
-            "use_llm_for_profiles": true,                 // Optional，IsOtherwise useLLMGeneratepersona
-            "parallel_profile_count": 5,                  // Optional, number of personas to generate in parallel, default 5
-            "force_regenerate": false                     // Optional，ForceGenerate，Defaultfalse
+            "simulation_id": "sim_xxxx",                   // 必填，模拟 ID
+            "entity_types": ["Student", "PublicFigure"],  // 可选，指定实体类型
+            "use_llm_for_profiles": true,                 // 可选，是否使用 LLM 生成 persona
+            "parallel_profile_count": 5,                  // 可选，并行生成的 persona 数量，默认 5
+            "force_regenerate": false                     // 可选，强制重新生成，默认 false
         }
     
-    Returns:
+    返回:
         {
             "success": true,
             "data": {
                 "simulation_id": "sim_xxxx",
-                "task_id": "task_xxxx",           // Return for new tasks
+                "task_id": "task_xxxx",           // 新任务时返回
                 "status": "preparing|ready",
-                "message": "Preparation task started|Preparation already completed",
-                "already_prepared": true|false    // Is preparation complete
+                "message": "准备任务已启动|准备已完成",
+                "already_prepared": true|false    // 是否已完成准备
             }
         }
     """
@@ -399,7 +399,7 @@ def prepare_simulation():
         if not simulation_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide simulation_id"
+                "error": "请提供 simulation_id"
             }), 400
         
         manager = SimulationManager()
@@ -408,20 +408,20 @@ def prepare_simulation():
         if not state:
             return jsonify({
                 "success": False,
-                "error": f"Simulation does not exist: {simulation_id}"
+                "error": f"模拟不存在: {simulation_id}"
             }), 404
         
-        # Check if forced regeneration
+        # 检查是否强制重新生成
         force_regenerate = data.get('force_regenerate', False)
-        logger.info(f"Start processing /prepare Request: simulation_id={simulation_id}, force_regenerate={force_regenerate}")
+        logger.info(f"开始处理 /prepare 请求: simulation_id={simulation_id}, force_regenerate={force_regenerate}")
         
-        # Check if already prepared（Avoid duplicatesGenerate）
+        # 检查是否已准备（避免重复生成）
         if not force_regenerate:
-            logger.debug(f"Check simulation {simulation_id} Is preparation complete...")
+            logger.debug(f"检查模拟 {simulation_id} 是否准备完成...")
             is_prepared, prepare_info = _check_simulation_prepared(simulation_id)
-            logger.debug(f"Check result: is_prepared={is_prepared}, prepare_info={prepare_info}")
+            logger.debug(f"检查结果: is_prepared={is_prepared}, prepare_info={prepare_info}")
             if is_prepared:
-                logger.info(f"Simulation {simulation_id} has preparation complete, no need to regenerate")
+                logger.info(f"模拟 {simulation_id} 已准备完成，无需重新生成")
                 return jsonify({
                     "success": True,
                     "data": {
@@ -433,9 +433,9 @@ def prepare_simulation():
                     }
                 })
             else:
-                logger.info(f"Simulation {simulation_id} has no preparation complete, preparing now")
+                logger.info(f"模拟 {simulation_id} 未准备完成，现在开始准备")
         
-        # Get necessary information from project
+        # 从项目获取必要信息
         project = ProjectManager.get_project(state.project_id)
         if not project:
             return jsonify({
@@ -443,7 +443,7 @@ def prepare_simulation():
                 "error": f"Project does not exist: {state.project_id}"
             }), 404
         
-        # Get simulation requirements
+        # 获取模拟需求
         simulation_requirement = project.simulation_requirement or ""
         if not simulation_requirement:
             return jsonify({
@@ -451,38 +451,38 @@ def prepare_simulation():
                 "error": "Project missing simulation requirement description (simulation_requirement)"
             }), 400
         
-        # Get document text
+        # 获取文档文本
         document_text = ProjectManager.get_extracted_text(state.project_id) or ""
         
         entity_types_list = data.get('entity_types')
         use_llm_for_profiles = data.get('use_llm_for_profiles', True)
         parallel_profile_count = data.get('parallel_profile_count', 5)
         
-        # ========== Get GraphStorage（Capture reference before background task starts） ==========
+        # ========== 获取 GraphStorage（在后台任务启动前捕获引用） ==========
         storage = current_app.extensions.get('neo4j_storage')
         if not storage:
-            raise ValueError("GraphStorage not initialized — check Neo4j connection")
+            raise ValueError("GraphStorage 未初始化 — 请检查 Neo4j 连接")
 
-        # ========== Synchronously get entity count（Before background task starts） ==========
-        # This way frontend when callingprepareCan immediately getExpected total agents
+        # ========== 同步获取实体数量（在后台任务启动前） ==========
+        # 这样前端在调用 prepare 时可以立即获取预期的总 agent 数量
         try:
-            logger.info(f"Synchronously get entity count: graph_id={state.graph_id}")
+            logger.info(f"同步获取实体数量: graph_id={state.graph_id}")
             reader = EntityReader(storage)
-            # Quickly read entities (no edge information, only statistics required)
+            # 快速读取实体（不需要边信息，仅统计）
             filtered_preview = reader.filter_defined_entities(
                 graph_id=state.graph_id,
                 defined_entity_types=entity_types_list,
-                enrich_with_edges=False  # No edge information，Speed up
+                enrich_with_edges=False  # 不需要边信息，加快速度
             )
-            # Save entity count to status（For frontend to get immediately）
+            # 保存实体数量到状态（供前端立即获取）
             state.entities_count = filtered_preview.filtered_count
             state.entity_types = list(filtered_preview.entity_types)
-            logger.info(f"Expected entity count: {filtered_preview.filtered_count}, [type][model]: {filtered_preview.entity_types}")
+            logger.info(f"预期实体数量: {filtered_preview.filtered_count}, [类型][模型]: {filtered_preview.entity_types}")
         except Exception as e:
-            logger.warning(f"Synchronously get entity countFailed（Will retry in background task）: {e}")
-            # Failure does not affect subsequent process，Background task will retry
+            logger.warning(f"同步获取实体数量失败（将在后台任务中重试）: {e}")
+            # 失败不影响后续流程，后台任务会重试
         
-        # Create async task
+        # 创建异步任务
         task_manager = TaskManager()
         task_id = task_manager.create_task(
             task_type="simulation_prepare",
@@ -492,26 +492,26 @@ def prepare_simulation():
             }
         )
         
-        # Update simulation status（Include pre-fetched entity count）
+        # 更新模拟状态（包括预获取的实体数量）
         state.status = SimulationStatus.PREPARING
         manager._save_simulation_state(state)
         
-        # Define background task
+        # 定义后台任务
         def run_prepare():
             try:
                 task_manager.update_task(
                     task_id,
                     status=TaskStatus.PROCESSING,
                     progress=0,
-                    message="Start preparing simulation environment..."
+                    message="开始准备模拟环境..."
                 )
                 
-                # PrepareSimulation（With progress callback）
-                # Store stage progress details
+                # 准备模拟（带进度回调）
+                # 存储阶段进度详情
                 stage_details = {}
                 
                 def progress_callback(stage, progress, message, **kwargs):
-                    # Calculate total progress
+                    # 计算总进度
                     stage_weights = {
                         "reading": (0, 20),           # 0-20%
                         "generating_profiles": (20, 70),  # 20-70%
@@ -522,18 +522,18 @@ def prepare_simulation():
                     start, end = stage_weights.get(stage, (0, 100))
                     current_progress = int(start + (end - start) * progress / 100)
                     
-                    # Build detailed progress information
+                    # 构建详细进度信息
                     stage_names = {
-                        "reading": "Read knowledge graph entities",
-                        "generating_profiles": "GenerateAgentpersona",
-                        "generating_config": "Generate simulation configuration",
-                        "copying_scripts": "Prepare simulation scripts"
+                        "reading": "读取知识图谱实体",
+                        "generating_profiles": "生成 Agent persona",
+                        "generating_config": "生成模拟配置",
+                        "copying_scripts": "准备模拟脚本"
                     }
                     
                     stage_index = list(stage_weights.keys()).index(stage) + 1 if stage in stage_weights else 1
                     total_stages = len(stage_weights)
                     
-                    # Update stage details
+                    # 更新阶段详情
                     stage_details[stage] = {
                         "stage_name": stage_names.get(stage, stage),
                         "stage_progress": progress,
@@ -542,7 +542,7 @@ def prepare_simulation():
                         "item_name": kwargs.get("item_name", "")
                     }
                     
-                    # Build detailed progress information
+                    # 构建详细进度信息
                     detail = stage_details[stage]
                     progress_detail_data = {
                         "current_stage": stage,
@@ -555,7 +555,7 @@ def prepare_simulation():
                         "item_description": message
                     }
                     
-                    # Build concise message
+                    # 构建简洁消息
                     if detail["total"] > 0:
                         detailed_message = (
                             f"[{stage_index}/{total_stages}] {stage_names.get(stage, stage)}: "
@@ -589,17 +589,17 @@ def prepare_simulation():
                 )
                 
             except Exception as e:
-                logger.error(f"Failed to prepare simulation: {str(e)}")
+                logger.error(f"准备模拟失败: {str(e)}")
                 task_manager.fail_task(task_id, str(e))
                 
-                # Update simulation status to failed
+                # 更新模拟状态为失败
                 state = manager.get_simulation(simulation_id)
                 if state:
                     state.status = SimulationStatus.FAILED
                     state.error = str(e)
                     manager._save_simulation_state(state)
         
-        # Start background thread
+        # 启动后台线程
         thread = threading.Thread(target=run_prepare, daemon=True)
         thread.start()
         
@@ -623,7 +623,7 @@ def prepare_simulation():
         }), 404
         
     except Exception as e:
-        logger.error(f"Failed to start preparation task: {str(e)}")
+        logger.error(f"启动准备任务失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -754,7 +754,7 @@ def get_simulation(simulation_id: str):
         if not state:
             return jsonify({
                 "success": False,
-                "error": f"Simulation does not exist: {simulation_id}"
+                "error": f"模拟不存在: {simulation_id}"
             }), 404
         
         result = state.to_dict()
@@ -769,7 +769,7 @@ def get_simulation(simulation_id: str):
         })
         
     except Exception as e:
-        logger.error(f"Failed to get simulation status: {str(e)}")
+        logger.error(f"获取模拟状态失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -798,7 +798,7 @@ def list_simulations():
         })
         
     except Exception as e:
-        logger.error(f"Failed to list simulations: {str(e)}")
+        logger.error(f"列出模拟失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -1058,7 +1058,7 @@ def get_simulation_profiles_realtime(simulation_id: str):
         if not os.path.exists(sim_dir):
             return jsonify({
                 "success": False,
-                "error": f"Simulation does not exist: {simulation_id}"
+                "error": f"模拟不存在: {simulation_id}"
             }), 404
         
         # Determine file path
@@ -1161,7 +1161,7 @@ def get_simulation_config_realtime(simulation_id: str):
         if not os.path.exists(sim_dir):
             return jsonify({
                 "success": False,
-                "error": f"Simulation does not exist: {simulation_id}"
+                "error": f"模拟不存在: {simulation_id}"
             }), 404
         
         # Config file path
@@ -1395,7 +1395,7 @@ def generate_profiles():
         
         storage = current_app.extensions.get('neo4j_storage')
         if not storage:
-            raise ValueError("GraphStorage not initialized")
+            raise ValueError("GraphStorage 未初始化")
         reader = EntityReader(storage)
         filtered = reader.filter_defined_entities(
             graph_id=graph_id,
@@ -1491,7 +1491,7 @@ def start_simulation():
         if not simulation_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide simulation_id"
+                "error": "请提供 simulation_id"
             }), 400
 
         platform = data.get('platform', 'parallel')
@@ -1527,7 +1527,7 @@ def start_simulation():
         if not state:
             return jsonify({
                 "success": False,
-                "error": f"Simulation does not exist: {simulation_id}"
+                "error": f"模拟不存在: {simulation_id}"
             }), 404
 
         force_restarted = False
@@ -1663,7 +1663,7 @@ def stop_simulation():
         if not simulation_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide simulation_id"
+                "error": "请提供 simulation_id"
             }), 400
         
         run_state = SimulationRunner.stop_simulation(simulation_id)
@@ -2197,7 +2197,7 @@ def interview_agent():
         if not simulation_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide simulation_id"
+                "error": "请提供 simulation_id"
             }), 400
         
         if agent_id is None:
@@ -2318,7 +2318,7 @@ def interview_agents_batch():
         if not simulation_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide simulation_id"
+                "error": "请提供 simulation_id"
             }), 400
 
         if not interviews or not isinstance(interviews, list):
@@ -2445,7 +2445,7 @@ def interview_all_agents():
         if not simulation_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide simulation_id"
+                "error": "请提供 simulation_id"
             }), 400
 
         if not prompt:
@@ -2549,7 +2549,7 @@ def get_interview_history():
         if not simulation_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide simulation_id"
+                "error": "请提供 simulation_id"
             }), 400
 
         history = SimulationRunner.get_interview_history(
@@ -2608,7 +2608,7 @@ def get_env_status():
         if not simulation_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide simulation_id"
+                "error": "请提供 simulation_id"
             }), 400
 
         env_alive = SimulationRunner.check_env_alive(simulation_id)
@@ -2676,7 +2676,7 @@ def close_simulation_env():
         if not simulation_id:
             return jsonify({
                 "success": False,
-                "error": "Please provide simulation_id"
+                "error": "请提供 simulation_id"
             }), 400
         
         result = SimulationRunner.close_simulation_env(

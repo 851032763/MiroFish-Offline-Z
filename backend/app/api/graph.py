@@ -1,6 +1,6 @@
 """
-Graph-related API Routes
-Uses project context mechanism with server-side state persistence
+图谱相关 API 路由
+使用项目上下文机制与服务器端状态持久化
 """
 
 import os
@@ -18,7 +18,7 @@ from ..utils.logger import get_logger
 from ..models.task import TaskManager, TaskStatus
 from ..models.project import ProjectManager, ProjectStatus
 
-# Get logger
+# 获取日志记录器
 logger = get_logger('mirofish.api')
 
 
@@ -38,7 +38,7 @@ def allowed_file(filename: str) -> bool:
     return ext in Config.ALLOWED_EXTENSIONS
 
 
-# ============== Project Management Interface ==============
+# ============== 项目管理接口 ==============
 
 @graph_bp.route('/project/<project_id>', methods=['GET'])
 def get_project(project_id: str):
