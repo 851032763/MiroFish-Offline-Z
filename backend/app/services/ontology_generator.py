@@ -223,33 +223,33 @@ class OntologyGenerator:
         # If text exceeds 50,000 characters, truncate (only affects LLM input, not graph construction)
         if len(combined_text) > self.MAX_TEXT_LENGTH_FOR_LLM:
             combined_text = combined_text[:self.MAX_TEXT_LENGTH_FOR_LLM]
-            combined_text += f"\n\n...(Original text has {original_length} characters, first {self.MAX_TEXT_LENGTH_FOR_LLM} characters extracted for ontology analysis)..."
+            combined_text += f"\n\n...（原始文本共{original_length}个字符，已截取前{self.MAX_TEXT_LENGTH_FOR_LLM}个字符用于本体分析）..."
 
-        message = f"""## Simulation Requirements
+        message = f"""## 模拟需求
 
 {simulation_requirement}
 
-## Document Content
+## 文档内容
 
 {combined_text}
 """
 
         if additional_context:
             message += f"""
-## Additional Explanation
+## 补充说明
 
 {additional_context}
 """
 
         message += """
-Based on the above content, design entity types and relationship types suitable for social opinion simulation.
+基于以上内容，设计适合社会舆论模拟的实体类型和关系类型。
 
-**Rules to follow**:
-1. Must output exactly 10 entity types
-2. Last 2 must be fallback types: Person (individual fallback) and Organization (organization fallback)
-3. First 8 are specific types designed based on text content
-4. All entity types must be real-world subjects that can voice opinions, not abstract concepts
-5. Attribute names cannot use reserved words like name, uuid, group_id, use full_name, org_name, etc. instead
+**必须遵循的规则**：
+1. 必须输出恰好10个实体类型
+2. 最后2个必须是回退类型：Person（个人回退）和 Organization（组织回退）
+3. 前8个是基于文本内容设计的具体类型
+4. 所有实体类型必须是能够发声的真实世界主体，不能是抽象概念
+5. 属性名不能使用保留字如name、uuid、group_id，应使用full_name、org_name等代替
 """
 
         return message

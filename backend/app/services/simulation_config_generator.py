@@ -390,18 +390,18 @@ class SimulationConfigGenerator:
 
         # Build context
         context_parts = [
-            f"## Simulation Requirements\n{simulation_requirement}",
-            f"\n## Entity Information ({len(entities)})\n{entity_summary}",
+            f"## 模拟需求\n{simulation_requirement}",
+            f"\n## 实体信息 ({len(entities)})\n{entity_summary}",
         ]
 
         current_length = sum(len(p) for p in context_parts)
         remaining_length = self.MAX_CONTEXT_LENGTH - current_length - 500  # Reserve 500 characters
 
-        if remaining_length > 0 and document_text:
+            if remaining_length > 0 and document_text:
             doc_text = document_text[:remaining_length]
             if len(document_text) > remaining_length:
-                doc_text += "\n...(document truncated)"
-            context_parts.append(f"\n## Original Document Content\n{doc_text}")
+                doc_text += "\n...（文档已截断）"
+            context_parts.append(f"\n## 原始文档内容\n{doc_text}")
 
         return "\n".join(context_parts)
 
@@ -603,7 +603,7 @@ class SimulationConfigGenerator:
             "off_peak_hours": [0, 1, 2, 3, 4, 5],
             "morning_hours": [6, 7, 8],
             "work_hours": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
-            "reasoning": "Using default Chinese work schedule configuration (1 hour per round)"
+            "reasoning": "使用默认中国工作作息配置（每小时为1轮）"
         }
 
     def _parse_time_config(self, result: Dict[str, Any], num_entities: int) -> TimeSimulationConfig:
@@ -710,7 +710,7 @@ class SimulationConfigGenerator:
                 "hot_topics": [],
                 "narrative_direction": "",
                 "initial_posts": [],
-                "reasoning": "Using default configuration"
+                "reasoning": "使用默认配置"
             }
 
     def _parse_event_config(self, result: Dict[str, Any]) -> EventConfig:

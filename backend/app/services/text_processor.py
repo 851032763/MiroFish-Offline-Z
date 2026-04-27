@@ -1,5 +1,5 @@
 """
-Textatmanageserveservice
+文本处理服务
 """
 
 from typing import List, Optional
@@ -7,11 +7,11 @@ from ..utils.file_parser import FileParser, split_text_into_chunks
 
 
 class TextProcessor:
-    """Text processor"""
+    """文本处理器"""
     
     @staticmethod
     def extract_from_files(file_paths: List[str]) -> str:
-        """Extract text from multiple files"""
+        """从多个文件中提取文本"""
         return FileParser.extract_from_multiple(file_paths)
     
     @staticmethod
@@ -21,40 +21,40 @@ class TextProcessor:
         overlap: int = 50
     ) -> List[str]:
         """
-        Split text
+        分割文本
         
-        Args:
-            text: Original text
-            chunk_size: Chunk size
-            overlap: Overlap size
+        参数:
+            text: 原始文本
+            chunk_size: 块大小
+            overlap: 重叠大小
             
-        Returns:
-            Text chunk list
+        返回:
+            文本块列表
         """
         return split_text_into_chunks(text, chunk_size, overlap)
     
     @staticmethod
     def preprocess_text(text: str) -> str:
         """
-        preatmanageText
-        - moveexceptmanyremainingspacewhite
-        - markprepareconvertswitchperform
+        预处理文本
+        - 移除多余的空白字符
+        - 标准化换行符
         
-        Args:
-            text: sourcestartText
+        参数:
+            text: 源文本
             
-        Returns:
-            atmanageaftersText
+        返回:
+            预处理后的文本
         """
         import re
         
-        # Normalize line breaks
+        # 标准化换行符
         text = text.replace('\r\n', '\n').replace('\r', '\n')
         
-        # Remove consecutive blank lines (keep at most two line breaks)
+        # 移除连续的空白行（最多保留两个换行符）
         text = re.sub(r'\n{3,}', '\n\n', text)
         
-        # Remove leading/trailing whitespace
+        # 移除首尾空白
         lines = [line.strip() for line in text.split('\n')]
         text = '\n'.join(lines)
         
@@ -62,7 +62,7 @@ class TextProcessor:
     
     @staticmethod
     def get_text_stats(text: str) -> dict:
-        """Get text statistics"""
+        """获取文本统计信息"""
         return {
             "total_chars": len(text),
             "total_lines": text.count('\n') + 1,
