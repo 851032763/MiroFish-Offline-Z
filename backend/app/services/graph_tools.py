@@ -946,23 +946,23 @@ class GraphToolsService:
         max_queries: int = 5
     ) -> List[str]:
         """Use LLM to generate sub-questions"""
-        system_prompt = """You are a professional question analysis expert. Your task is to decompose a complex question into multiple sub-questions that can be independently observed in a simulated world.
+        system_prompt = """你是一位专业的问题分析专家。你的任务是将一个复杂问题分解为多个可以在模拟世界中独立观察的子问题。
 
-Requirements:
-1. Each sub-question should be specific enough to find related Agent behavior or events in the simulated world
-2. Sub-questions should cover different dimensions of the original question (e.g., who, what, why, how, when, where)
-3. Sub-questions should be relevant to the simulation scenario
-4. Return in JSON format: {"sub_queries": ["sub-question 1", "sub-question 2", ...]}"""
+要求:
+1. 每个子问题应该足够具体，能够在模拟世界中找到相关的Agent行为或事件
+2. 子问题应覆盖原问题的不同维度（如：谁、什么、为什么、怎么样、何时、何地）
+3. 子问题应与模拟场景相关
+4. 返回JSON格式: {"sub_queries": ["子问题1", "子问题2", ...]}"""
 
-        user_prompt = f"""Simulation requirement background:
+        user_prompt = f"""模拟需求背景:
 {simulation_requirement}
 
-{f"Report context: {report_context[:500]}" if report_context else ""}
+{f"报告上下文: {report_context[:500]}" if report_context else ""}
 
-Please decompose the following question into {max_queries} sub-questions:
+请将以下问题分解为{max_queries}个子问题:
 {query}
 
-Return the sub-questions as a JSON list."""
+以JSON列表形式返回子问题。"""
 
         try:
             response = self.llm.chat_json(
@@ -1342,30 +1342,30 @@ Return the sub-questions as a JSON list."""
             }
             agent_summaries.append(summary)
 
-        system_prompt = """You are a professional interview planning expert. Your task is to select the most suitable Agents for interview from the simulated Agent list based on the interview requirements.
+        system_prompt = """你是一位专业的访谈策划专家。你的任务是根据访谈需求从模拟Agent列表中选择最适合访谈的Agent。
 
-Selection Criteria:
-1. Agent's identity/profession is relevant to the interview topic
-2. Agent may hold unique or valuable perspectives
-3. Select diverse perspectives (e.g., supporters, opposers, neutral, experts, etc.)
-4. Prioritize roles directly related to the event
+选择标准:
+1. Agent的身份/职业与访谈主题相关
+2. Agent可能拥有独特或有价值的观点
+3. 选择多样化的视角（如：支持者、反对者、中立者、专家等）
+4. 优先选择与事件直接相关的角色
 
-Return JSON format:
+返回JSON格式:
 {
-    "selected_indices": [List of indices of selected Agents],
-    "reasoning": "Explanation of selection rationale"
+    "selected_indices": [所选Agent的索引列表],
+    "reasoning": "选择理由说明"
 }"""
 
-        user_prompt = f"""Interview Requirement:
+        user_prompt = f"""访谈需求:
 {interview_requirement}
 
-Simulation Background:
-{simulation_requirement if simulation_requirement else "Not provided"}
+模拟背景:
+{simulation_requirement if simulation_requirement else "未提供"}
 
-Available Agent List ({len(agent_summaries)} total):
+可用Agent列表（共{len(agent_summaries)}个）:
 {json.dumps(agent_summaries, ensure_ascii=False, indent=2)}
 
-Please select up to {max_agents} most suitable Agents for interview and explain your selection rationale."""
+请选择最多{max_agents}个最适合访谈的Agent，并说明你的选择理由。"""
 
         try:
             response = self.llm.chat_json(
@@ -1404,25 +1404,25 @@ Please select up to {max_agents} most suitable Agents for interview and explain 
 
         agent_roles = [a.get("profession", "Unknown") for a in selected_agents]
 
-        system_prompt = """You are a professional journalist/interviewer. Based on the interview requirements, generate 3-5 deep interview questions.
+        system_prompt = """你是一位专业的记者/访谈者。根据访谈需求，生成3-5个深度访谈问题。
 
-Question Requirements:
-1. Open-ended questions that encourage detailed answers
-2. Questions that may have different answers for different roles
-3. Cover multiple dimensions: facts, viewpoints, feelings, etc.
-4. Natural language, like real interviews
-5. Keep each question under 50 characters, concise and clear
-6. Ask directly, do not include background explanation or prefix
+问题要求:
+1. 开放式问题，鼓励详细回答
+2. 不同角色可能有不同答案的问题
+3. 覆盖多个维度：事实、观点、感受等
+4. 自然语言，像真实访谈一样
+5. 每个问题控制在50个字符以内，简洁清晰
+6. 直接提问，不包含背景说明或前缀
 
-Return JSON format: {"questions": ["question1", "question2", ...]}"""
+返回JSON格式: {"questions": ["问题1", "问题2", ...]}"""
 
-        user_prompt = f"""Interview Requirement: {interview_requirement}
+        user_prompt = f"""访谈需求: {interview_requirement}
 
-Simulation Background: {simulation_requirement if simulation_requirement else "Not provided"}
+模拟背景: {simulation_requirement if simulation_requirement else "未提供"}
 
-Interview Subject Roles: {', '.join(agent_roles)}
+访谈对象角色: {', '.join(agent_roles)}
 
-Please generate 3-5 interview questions."""
+请生成3-5个访谈问题。"""
 
         try:
             response = self.llm.chat_json(
@@ -1457,28 +1457,28 @@ Please generate 3-5 interview questions."""
         for interview in interviews:
             interview_texts.append(f"[{interview.agent_name} ({interview.agent_role})]\n{interview.response[:500]}")
 
-        system_prompt = """You are a professional news editor. Please generate an interview summary based on the responses from multiple interviewees.
+        system_prompt = """你是一位专业的新闻编辑。请根据多位受访者的回答生成访谈摘要。
 
-Summary Requirements:
-1. Extract main viewpoints from all parties
-2. Point out consensus and disagreement among viewpoints
-3. Highlight valuable quotes
-4. Remain objective and neutral, do not favor any side
-5. Keep it under 1000 words
+摘要要求:
+1. 提取各方的主要观点
+2. 指出观点中的共识和分歧
+3. 突出有价值的引述
+4. 保持客观中立，不偏向任何一方
+5. 控制在1000字以内
 
-Format Constraints (Must Follow):
-- Use plain text paragraphs, separated by blank lines
-- Do not use Markdown headings (e.g., #, ##, ###)
-- Do not use dividers (e.g., ---, ***)
-- Use appropriate quotes when citing interviewees
-- Can use **bold** to mark keywords, but do not use other Markdown syntax"""
+格式约束（必须遵守）:
+- 使用纯文本段落，用空行分隔
+- 不使用Markdown标题（如：#、##、###）
+- 不使用分隔线（如：---、***）
+- 引用受访者时使用适当的引号
+- 可以使用**粗体**标记关键词，但不使用其他Markdown语法"""
 
-        user_prompt = f"""Interview Topic: {interview_requirement}
+        user_prompt = f"""访谈主题: {interview_requirement}
 
-Interview Content:
+访谈内容:
 {"".join(interview_texts)}
 
-Please generate an interview summary."""
+请生成访谈摘要。"""
 
         try:
             summary = self.llm.chat(

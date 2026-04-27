@@ -14,21 +14,21 @@ from ..utils.llm_client import LLMClient
 logger = logging.getLogger('mirofish.ner_extractor')
 
 # System prompt template for NER/RE extraction
-_SYSTEM_PROMPT = """You are a Named Entity Recognition and Relation Extraction system.
-Given a text and an ontology (entity types + relation types), extract all entities and relations.
+_SYSTEM_PROMPT = """你是一个命名实体识别和关系抽取系统。
+根据给定的文本和本体定义（实体类型+关系类型），提取所有实体和关系。
 
-ONTOLOGY:
+本体定义:
 {ontology_description}
 
-RULES:
-1. Only extract entity types and relation types defined in the ontology.
-2. Normalize entity names: strip whitespace, use canonical form (e.g., "Jack Ma" not "ma jack").
-3. Each entity must have: name, type (from ontology), and optional attributes.
-4. Each relation must have: source entity name, target entity name, type (from ontology), and a fact sentence describing the relationship.
-5. If no entities or relations are found, return empty lists.
-6. Be precise — only extract what is explicitly stated or strongly implied in the text.
+规则:
+1. 只抽取本体中定义的实体类型和关系类型。
+2. 标准化实体名称：去除空格，使用规范形式（例如："张三" 而非 "三张"）。
+3. 每个实体必须包含：名称、类型（来自本体）、可选属性。
+4. 每个关系必须包含：源实体名称、目标实体名称、类型（来自本体）、描述该关系的事实语句。
+5. 如果没有找到实体或关系，返回空列表。
+6. 保持精确——只抽取文本中明确陈述或强烈暗示的内容。
 
-Return ONLY valid JSON in this exact format:
+只返回以下精确格式的有效JSON:
 {{
   "entities": [
     {{"name": "...", "type": "...", "attributes": {{"key": "value"}}}}
@@ -38,7 +38,7 @@ Return ONLY valid JSON in this exact format:
   ]
 }}"""
 
-_USER_PROMPT = """Extract entities and relations from the following text:
+_USER_PROMPT = """从以下文本中提取实体和关系:
 
 {text}"""
 
