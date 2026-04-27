@@ -1,0 +1,37 @@
+# ===========================================
+# MiroFish Backend Dependencies
+# ===========================================
+# Python 3.11+ required
+# Install: pip install -r requirements.txt
+# ===========================================
+
+# ============= Core Framework =============
+flask>=3.0.0
+flask-cors>=6.0.0
+
+# ============= LLM Related =============
+# OpenAI SDK (unified OpenAI format for LLM / Ollama)
+openai>=1.0.0
+# HTTP client for Ollama embedding API
+requests>=2.28.0
+
+# ============= Neo4j Graph Database =============
+neo4j>=5.15.0
+
+# ============= OASIS Social Media Simulation =============
+# OASIS social simulation framework
+camel-oasis==0.2.5
+camel-ai==0.2.78
+
+# ============= File Processing =============
+PyMuPDF>=1.24.0
+# Encoding detection (supports non-UTF-8 text files)
+charset-normalizer>=3.0.0
+chardet>=5.0.0
+
+# ============= Utilities =============
+# Environment variable loading
+python-dotenv>=1.0.0
+
+# Data validation
+pydantic>=2.0.0
