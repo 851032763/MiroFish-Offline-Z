@@ -614,8 +614,8 @@ class OasisProfileGenerator:
         }
     
     def _get_system_prompt(self, is_individual: bool) -> str:
-        """Get system prompt"""
-        base_prompt = "你是一位生成社交媒体用户画像的专家。生成详细、真实的人物画像用于舆论模拟，最大程度还原现有现实。必须返回有效的JSON格式，所有字符串值不能包含未转义的换行符。使用英文。"
+        """获取系统提示词"""
+        base_prompt = "你是一位生成社交媒体用户画像的专家。生成详细、真实的人物画像用于舆论模拟，最大程度还原现有现实。必须返回有效的JSON格式，所有字符串值不能包含未转义的换行符。使用中文。"
         return base_prompt
     
     def _build_individual_persona_prompt(
@@ -662,7 +662,7 @@ class OasisProfileGenerator:
 重要:
 - 所有字段值必须是字符串或数字，不能使用换行符
 - persona必须是连贯的文本描述
-- 使用英文
+- 使用中文
 - 内容必须与实体信息一致
 - age必须是有效整数，gender必须是"male"或"female"
 """
@@ -711,7 +711,7 @@ class OasisProfileGenerator:
 重要:
 - 所有字段值必须是字符串或数字，不允许空值
 - persona必须是连贯的文本描述，不能使用换行符
-- 使用英文
+- 使用中文
 - age必须是整数30，gender必须是字符串"other"
 - 机构账号发言必须符合其身份定位"""
     

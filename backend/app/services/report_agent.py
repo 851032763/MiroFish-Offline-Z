@@ -930,32 +930,32 @@ class ReportAgent:
                 "name": "insight_forge",
                 "description": TOOL_DESC_INSIGHT_FORGE,
                 "parameters": {
-                    "query": "The question or topic you want to deeply analyze",
-                    "report_context": "Context of current report section (optional, helps generate more accurate sub-questions)"
+                    "query": "你想要深入分析的问题或主题",
+                    "report_context": "当前报告章节的上下文（可选，有助于生成更准确的子问题）"
                 }
             },
             "panorama_search": {
                 "name": "panorama_search",
                 "description": TOOL_DESC_PANORAMA_SEARCH,
                 "parameters": {
-                    "query": "Search query, used for relevance sorting",
-                    "include_expired": "Whether to include expired/historical content (default True)"
+                    "query": "搜索查询，用于相关性排序",
+                    "include_expired": "是否包含过期/历史内容（默认True）"
                 }
             },
             "quick_search": {
                 "name": "quick_search",
                 "description": TOOL_DESC_QUICK_SEARCH,
                 "parameters": {
-                    "query": "Search query string",
-                    "limit": "Number of results to return (optional, default 10)"
+                    "query": "搜索查询字符串",
+                    "limit": "返回结果数量（可选，默认10）"
                 }
             },
             "interview_agents": {
                 "name": "interview_agents",
                 "description": TOOL_DESC_INTERVIEW_AGENTS,
                 "parameters": {
-                    "interview_topic": "Interview topic or requirement description (e.g. 'understand students' views on the dorm formaldehyde incident')",
-                    "max_agents": "Maximum number of agents to interview (optional, default 5, max 10)"
+                    "interview_topic": "访谈主题或需求描述（例如：'了解学生对宿舍甲醛事件的看法'）",
+                    "max_agents": "最大访谈Agent数量（可选，默认5，最大10）"
                 }
             }
         }
@@ -1320,7 +1320,7 @@ class ReportAgent:
                 # If there are more iterations, add message and retry
                 if iteration < max_iterations - 1:
                     messages.append({"role": "assistant", "content": "(Response empty)"})
-                    messages.append({"role": "user", "content": "Please continue generating content."})
+                    messages.append({"role": "user", "content": "请继续生成内容。"})
                     continue
                 # Last iteration also returned None, exit loop and enter forced conclusion
                 break
@@ -1330,7 +1330,7 @@ class ReportAgent:
             # Parse once, reuse result
             tool_calls = self._parse_tool_calls(response)
             has_tool_calls = bool(tool_calls)
-            has_final_answer = "Final Answer:" in response
+            has_final_answer = "最终答案:" in response
 
             # ── Conflict handling: LLM simultaneously output tool calls and Final Answer ──
             if has_tool_calls and has_final_answer:
@@ -1346,11 +1346,11 @@ class ReportAgent:
                     messages.append({
                         "role": "user",
                         "content": (
-                            "[Format Error] You cannot include both tool calls and Final Answer in one reply.\n"
-                            "Each reply can only do one of the following:\n"
-                            "- Call a tool (output a <tool_call> block, don't write Final Answer)\n"
-                            "- Output final content (starting with 'Final Answer:', don't include <tool_call>)\n"
-                            "Please reply again and only do one of these."
+                            "[格式错误] 你不能在一次回复中同时包含工具调用和最终答案。\n"
+                            "每次回复只能做以下其中一件事：\n"
+                            "- 调用工具（输出一个<tool_call>块，不要写最终答案）\n"
+                            "- 输出最终内容（以'最终答案:'开头，不要包含<tool_call>）\n"
+                            "请重新回复，只做其中一件事。"
                         ),
                     })
                     continue
@@ -1397,7 +1397,7 @@ class ReportAgent:
                     continue
 
                 # Normal completion
-                final_answer = response.split("Final Answer:")[-1].strip()
+                final_answer = response.split("最终答案:")[-1].strip()
                 logger.info(f"Section {section.title} generation completed (tool calls: {tool_calls_count}times)")
 
                 if self.report_logger:
@@ -1493,9 +1493,8 @@ class ReportAgent:
                 })
                 continue
 
-            # Directly adopt this content as final answer, no more waiting
-            # directlyconvertthis contentas finalanswer, no more waiting
-            logger.info(f"Section {section.title} did not detectto 'Final Answer:' prefix, directlyadoptLLM outputas finalcontent（Tool call: {tool_calls_count}times)")
+            # 直接采用此内容作为最终答案，不再等待
+            logger.info(f"章节 {section.title} 未检测到'最终答案:'前缀，直接采用LLM输出作为最终内容（工具调用: {tool_calls_count}次）")
             final_answer = response.strip()
 
             if self.report_logger:
@@ -1507,8 +1506,8 @@ class ReportAgent:
                 )
             return final_answer
         
-        # Reachedmaximum iterations, forcegeneratecontent
-        logger.warning(f"Section {section.title} reachedmaximumiterationscount，Forcegenerate")
+        # 已达到最大迭代次数，强制生成内容
+        logger.warning(f"章节 {section.title} 已达到最大迭代次数，强制生成")
         messages.append({"role": "user", "content": REACT_FORCE_FINAL_MSG})
         
         response = self.llm.chat(
@@ -1517,16 +1516,15 @@ class ReportAgent:
             max_tokens=4096
         )
 
-        # Check forceconclusion when LLM return is None
+        # 检查强制结论时LLM返回是否为None
         if response is None:
-            final_answer = f"(This section generation failed: LLM returned empty response, please retry later)"
-            final_answer = f"(ThisSectiongeneratefailed: LLM returnedemptyresponse, pleaselaterretry)"
-        elif "Final Answer:" in response:
-            final_answer = response.split("Final Answer:")[-1].strip()
+            final_answer = f"（本章节生成失败：LLM返回空响应，请稍后重试）"
+        elif "最终答案:" in response:
+            final_answer = response.split("最终答案:")[-1].strip()
         else:
             final_answer = response
         
-        # Log sectioncontentgeneratecompletion log
+        # 记录章节内容生成完成日志
         if self.report_logger:
             self.report_logger.log_section_content(
                 section_title=section.title,
@@ -1543,29 +1541,26 @@ class ReportAgent:
         report_id: Optional[str] = None
     ) -> Report:
         """
-        Generate complete report (realtime output per section)
+        生成完整报告（每章节实时输出）
         
-        File structure:
-        File structure:
+        文件结构:
         reports/{report_id}/
-            outline.json    - Report outline
-            progress.json   - Generation progress
-            section_01.md   - Section 1
-            section_02.md   - Section 2
-            section_02.md   - Section 2
+            outline.json    - 报告大纲
+            progress.json   - 生成进度
+            section_01.md   - 第1章
+            section_02.md   - 第2章
             ...
-            full_report.md  - Complete report
+            full_report.md  - 完整报告
         
         Args:
-            report_id: Report ID (optional, auto-generate if not provided)
-            report_id: Report ID (optional, auto-generate if not provided)
+            report_id: 报告ID（可选，如不提供则自动生成）
             
         Returns:
-            Report: Complete report
+            Report: 完整报告
         """
         import uuid
         
-        # If not provided report_id，then autogenerate
+        # 如未提供report_id，则自动生成
         if not report_id:
             report_id = f"report_{uuid.uuid4().hex[:12]}"
         start_time = datetime.now()
@@ -1579,14 +1574,14 @@ class ReportAgent:
             created_at=datetime.now().isoformat()
         )
         
-        # CompletedSection Titlelist（for progress tracking）
+        # 已完成章节标题列表（用于进度跟踪）
         completed_section_titles = []
         
         try:
-            # Initialize: Create report folder and save initial state
+            # 初始化：创建报告文件夹并保存初始状态
             ReportManager._ensure_report_folder(report_id)
             
-            # Initialize logslogger（structured logs agent_log.jsonl）
+            # 初始化日志记录器（结构化日志 agent_log.jsonl）
             self.report_logger = ReportLogger(report_id)
             self.report_logger.log_start(
                 simulation_id=self.simulation_id,
@@ -1594,19 +1589,19 @@ class ReportAgent:
                 simulation_requirement=self.simulation_requirement
             )
             
-            # Initialize console logslogger（console_log.txt）
+            # 初始化控制台日志记录器（console_log.txt）
             self.console_logger = ReportConsoleLogger(report_id)
             
             ReportManager.update_progress(
-                report_id, "pending", 0, "Initializereport...",
+                report_id, "pending", 0, "初始化报告...",
                 completed_sections=[]
             )
             ReportManager.save_report(report)
             
-            # phase1: planoutline
+            # 阶段1：规划大纲
             report.status = ReportStatus.PLANNING
             ReportManager.update_progress(
-                report_id, "planning", 5, "Start planning report outline...",
+                report_id, "planning", 5, "开始规划报告大纲...",
                 completed_sections=[]
             )
             
@@ -1622,33 +1617,33 @@ class ReportAgent:
             )
             report.outline = outline
             
-            # recordplancompletion log
+            # 记录大纲规划完成日志
             self.report_logger.log_planning_complete(outline.to_dict())
             
-            # saveoutlinetofile
+            # 保存大纲到文件
             ReportManager.save_outline(report_id, outline)
             ReportManager.update_progress(
-                report_id, "planning", 15, f"Outline planning completed, total{len(outline.sections)}sections",
+                report_id, "planning", 15, f"大纲规划完成，共{len(outline.sections)}章节",
                 completed_sections=[]
             )
             ReportManager.save_report(report)
             
-            logger.info(f"outlinesavedtofile: {report_id}/outline.json")
+            logger.info(f"大纲已保存到文件: {report_id}/outline.json")
             
-            # Phase 2: Sequentially generate sectionsgeneration (per sectionsave）
+            # 阶段2：逐章生成（每章保存）
             report.status = ReportStatus.GENERATING
             
             total_sections = len(outline.sections)
-            generated_sections = []  # savecontentfor context
+            generated_sections = []  # 保存内容以供上下文使用
             
             for i, section in enumerate(outline.sections):
                 section_num = i + 1
                 base_progress = 20 + int((i / total_sections) * 70)
                 
-                # Update progress
+                # 更新进度
                 ReportManager.update_progress(
                     report_id, "generating", base_progress,
-                    f"generatinggenerateSection: {section.title} ({section_num}/{total_sections})",
+                    f"正在生成章节: {section.title} ({section_num}/{total_sections})",
                     current_section=section.title,
                     completed_sections=completed_section_titles
                 )
@@ -1657,10 +1652,10 @@ class ReportAgent:
                     progress_callback(
                         "generating", 
                         base_progress, 
-                        f"generatinggenerateSection: {section.title} ({section_num}/{total_sections})"
+                        f"正在生成章节: {section.title} ({section_num}/{total_sections})"
                     )
                 
-                # Generate main sectioncontent
+                # 生成主章节内容
                 section_content = self._generate_section_react(
                     section=section,
                     outline=outline,
@@ -1677,11 +1672,11 @@ class ReportAgent:
                 section.content = section_content
                 generated_sections.append(f"## {section.title}\n\n{section_content}")
 
-                # saveSection
+                # 保存章节
                 ReportManager.save_section(report_id, section_num, section)
                 completed_section_titles.append(section.title)
 
-                # Log sectioncompletion log
+                # 记录章节完成日志
                 full_section_content = f"## {section.title}\n\n{section_content}"
 
                 if self.report_logger:
@@ -1691,54 +1686,54 @@ class ReportAgent:
                         full_content=full_section_content.strip()
                     )
 
-                logger.info(f"Sectionsaved: {report_id}/section_{section_num:02d}.md")
+                logger.info(f"章节已保存: {report_id}/section_{section_num:02d}.md")
                 
-                # Update progress
+                # 更新进度
                 ReportManager.update_progress(
                     report_id, "generating", 
                     base_progress + int(70 / total_sections),
-                    f"Section {section.title} completed",
+                    f"章节 {section.title} 完成",
                     current_section=None,
                     completed_sections=completed_section_titles
                 )
             
-            # phase3: assembleComplete report
+            # 阶段3：组装完整报告
             if progress_callback:
-                progress_callback("generating", 95, "generatingassemblecompletereport...")
+                progress_callback("generating", 95, "正在组装完整报告...")
             
             ReportManager.update_progress(
-                report_id, "generating", 95, "generatingassemblecompletereport...",
+                report_id, "generating", 95, "正在组装完整报告...",
                 completed_sections=completed_section_titles
             )
             
-            # Using ReportManagerassembleComplete report
+            # 使用ReportManager组装完整报告
             report.markdown_content = ReportManager.assemble_full_report(report_id, outline)
             report.status = ReportStatus.COMPLETED
             report.completed_at = datetime.now().isoformat()
             
-            # Calculate total elapsed time
+            # 计算总耗时
             total_time_seconds = (datetime.now() - start_time).total_seconds()
             
-            # recordReportcompletion log
+            # 记录报告完成日志
             if self.report_logger:
                 self.report_logger.log_report_complete(
                     total_sections=total_sections,
                     total_time_seconds=total_time_seconds
                 )
             
-            # savefinalReport
+            # 保存最终报告
             ReportManager.save_report(report)
             ReportManager.update_progress(
-                report_id, "completed", 100, "reportgeneratecomplete",
+                report_id, "completed", 100, "报告生成完成",
                 completed_sections=completed_section_titles
             )
             
             if progress_callback:
-                progress_callback("completed", 100, "reportgeneratecomplete")
+                progress_callback("completed", 100, "报告生成完成")
             
-            logger.info(f"reportgeneratecomplete: {report_id}")
+            logger.info(f"报告生成完成: {report_id}")
             
-            # Closeconsoleloglogger
+            # 关闭控制台日志记录器
             if self.console_logger:
                 self.console_logger.close()
                 self.console_logger = None
@@ -1746,25 +1741,25 @@ class ReportAgent:
             return report
             
         except Exception as e:
-            logger.error(f"reportgeneratefailed: {str(e)}")
+            logger.error(f"报告生成失败: {str(e)}")
             report.status = ReportStatus.FAILED
             report.error = str(e)
             
-            # recorderrorlog
+            # 记录错误日志
             if self.report_logger:
                 self.report_logger.log_error(str(e), "failed")
             
-            # savefailedstatus
+            # 保存失败状态
             try:
                 ReportManager.save_report(report)
                 ReportManager.update_progress(
-                    report_id, "failed", -1, f"reportgeneratefailed: {str(e)}",
+                    report_id, "failed", -1, f"报告生成失败: {str(e)}",
                     completed_sections=completed_section_titles
                 )
             except Exception:
-                pass  # ignoresavefailederror
+                pass  # 忽略保存失败错误
             
-            # Closeconsoleloglogger
+            # 关闭控制台日志记录器
             if self.console_logger:
                 self.console_logger.close()
                 self.console_logger = None
@@ -1777,36 +1772,36 @@ class ReportAgent:
         chat_history: List[Dict[str, str]] = None
     ) -> Dict[str, Any]:
         """
-        andReport Agentchat
+        与Report Agent聊天
         
-        inchatinAgentcan autonomouslycallretrievaltoolto answer questions
+        在聊天中Agent可以自主调用检索工具来回答问题
         
         Args:
-            message: user message
-            chat_history: chathistory
+            message: 用户消息
+            chat_history: 聊天历史
             
         Returns:
             {
-                "response": "Agentresponse",
-                "tool_calls": [calltoollist],
-                "sources": [informationsource]
+                "response": "Agent响应",
+                "tool_calls": [调用工具列表],
+                "sources": [信息来源]
             }
         """
-        logger.info(f"Report Agentchat: {message[:50]}...")
+        logger.info(f"Report Agent聊天: {message[:50]}...")
         
         chat_history = chat_history or []
         
-        # GetalreadygenerateReportcontent
+        # 获取已生成的报告内容
         report_content = ""
         try:
             report = ReportManager.get_report_by_simulation(self.simulation_id)
             if report and report.markdown_content:
-                # limitReportlength，avoid overly long context
+                # 限制报告长度，避免过长的上下文
                 report_content = report.markdown_content[:15000]
                 if len(report.markdown_content) > 15000:
-                    report_content += "\n\n... [reportcontenthasTruncate] ..."
+                    report_content += "\n\n... [报告内容已截断] ..."
         except Exception as e:
-            logger.warning(f"getreportcontentfailed: {e}")
+            logger.warning(f"获取报告内容失败: {e}")
         
         system_prompt = CHAT_SYSTEM_PROMPT_TEMPLATE.format(
             simulation_requirement=self.simulation_requirement,
@@ -1814,22 +1809,22 @@ class ReportAgent:
             tools_description=self._get_tools_description(),
         )
 
-        # Buildmessage
+        # 构建消息
         messages = [{"role": "system", "content": system_prompt}]
         
-        # add historychat
-        for h in chat_history[-10:]:  # limithistorylength
+        # 添加历史聊天
+        for h in chat_history[-10:]:  # 限制历史长度
             messages.append(h)
         
-        # add user message
+        # 添加用户消息
         messages.append({
             "role": "user", 
             "content": message
         })
         
-        # ReACT loop（simplified version）
+        # ReACT循环（简化版）
         tool_calls_made = []
-        max_iterations = 2  # reduce iterations
+        max_iterations = 2  # 减少迭代次数
         
         for iteration in range(max_iterations):
             response = self.llm.chat(

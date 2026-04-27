@@ -980,9 +980,9 @@ class GraphToolsService:
             logger.warning(f"Failed to generate sub-questions: {str(e)}, using default sub-questions")
             return [
                 query,
-                f"Main participants in {query}",
-                f"Causes and impacts of {query}",
-                f"Development process of {query}"
+                f"{query}的主要参与者",
+                f"{query}的原因和影响",
+                f"{query}的发展过程"
             ][:max_queries]
 
     def panorama_search(
@@ -1377,7 +1377,7 @@ class GraphToolsService:
             )
 
             selected_indices = response.get("selected_indices", [])[:max_agents]
-            reasoning = response.get("reasoning", "Automatically selected based on relevance")
+            reasoning = response.get("reasoning", "根据相关性自动选择")
 
             selected_agents = []
             valid_indices = []
@@ -1433,14 +1433,14 @@ class GraphToolsService:
                 temperature=0.5
             )
 
-            return response.get("questions", [f"What is your perspective on {interview_requirement}?"])
+            return response.get("questions", [f"你对{interview_requirement}有什么看法？"])
 
         except Exception as e:
             logger.warning(f"Failed to generate interview questions: {e}")
             return [
-                f"What is your perspective on {interview_requirement}?",
-                "What impact does this have on you or the group you represent?",
-                "How do you think this issue should be solved or improved?"
+                f"你对{interview_requirement}有什么看法？",
+                "这对你或你所代表的群体有什么影响？",
+                "你认为这个问题应该如何解决或改善？"
             ]
 
     def _generate_interview_summary(
