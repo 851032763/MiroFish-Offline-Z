@@ -8,7 +8,7 @@
           <!-- Report Header -->
           <div class="report-header-block">
             <div class="report-meta">
-              <span class="report-tag">Prediction Report</span>
+              <span class="report-tag">预测报告</span>
               <span class="report-id">ID: {{ reportId || 'REF-2024-X92' }}</span>
             </div>
             <h1 class="main-title">{{ reportOutline.title }}</h1>
@@ -72,7 +72,7 @@
             <div class="waiting-ring"></div>
             <div class="waiting-ring"></div>
           </div>
-          <span class="waiting-text">Waiting for Report Agent...</span>
+          <span class="waiting-text">等待报告 Agent...</span>
         </div>
       </div>
 
@@ -86,7 +86,7 @@
           </svg>
           <div class="action-bar-text">
             <span class="action-bar-title">Interactive Tools</span>
-            <span class="action-bar-subtitle mono">{{ profiles.length }} agents available</span>
+            <span class="action-bar-subtitle mono">{{ profiles.length }} 个智能体可用</span>
           </div>
         </div>
           <div class="action-bar-tabs">
@@ -116,7 +116,7 @@
                 </svg>
               </button>
               <div v-if="showAgentDropdown" class="dropdown-menu">
-                <div class="dropdown-header">Select conversation target</div>
+                <div class="dropdown-header">选择对话目标</div>
                 <div 
                   v-for="(agent, idx) in profiles" 
                   :key="idx"
@@ -126,7 +126,7 @@
                   <div class="agent-avatar">{{ (agent.username || 'A')[0] }}</div>
                   <div class="agent-info">
                     <span class="agent-name">{{ agent.username }}</span>
-                    <span class="agent-role">{{ agent.profession || 'Unknown profession' }}</span>
+                    <span class="agent-role">{{ agent.profession || '未知职业' }}</span>
                   </div>
                 </div>
               </div>
@@ -154,8 +154,8 @@
             <div class="tools-card-header">
               <div class="tools-card-avatar">R</div>
               <div class="tools-card-info">
-                <div class="tools-card-name">Report Agent - Chat</div>
-                <div class="tools-card-subtitle">Quick chat version of Report Agent with 4 professional tools, has MiroFish's full memory</div>
+                <div class="tools-card-name">报告 Agent - 对话</div>
+                <div class="tools-card-subtitle">报告 Agent 的快速对话版本，拥有 4 个专业工具和 MiroFish 的完整记忆</div>
               </div>
               <button class="tools-card-toggle" @click="showToolsDetail = !showToolsDetail">
                 <svg :class="{ 'is-expanded': showToolsDetail }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
@@ -172,7 +172,7 @@
                     </svg>
                   </div>
                   <div class="tool-content">
-                    <div class="tool-name">InsightForge Deep Attribution</div>
+                    <div class="tool-name">深度归因分析</div>
                     <div class="tool-desc">Aligns real-world seed data with simulation environment state, combines Global/Local Memory mechanisms, provides cross-temporal deep attribution analysis</div>
                   </div>
                 </div>
@@ -184,8 +184,8 @@
                     </svg>
                   </div>
                   <div class="tool-content">
-                    <div class="tool-name">PanoramaSearch Panoramic Tracking</div>
-                    <div class="tool-desc">Graph-based breadth-first traversal algorithm, reconstructs event propagation paths, captures full information flow topology</div>
+                    <div class="tool-name">全景搜索 全景追踪</div>
+                    <div class="tool-desc">基于图的广度优先遍历算法，重建事件传播路径，捕获完整信息流拓扑</div>
                   </div>
                 </div>
                 <div class="tool-item tool-orange">
@@ -195,8 +195,8 @@
                     </svg>
                   </div>
                   <div class="tool-content">
-                    <div class="tool-name">QuickSearch Fast Retrieval</div>
-                    <div class="tool-desc">GraphRAG-based instant query interface, optimized indexing efficiency, for quickly extracting node attributes and discrete facts</div>
+                    <div class="tool-name">快速搜索 快速检索</div>
+                    <div class="tool-desc">基于 GraphRAG 的即时查询界面，优化索引效率，用于快速提取节点属性和离散事实</div>
                   </div>
                 </div>
                 <div class="tool-item tool-green">
@@ -208,8 +208,8 @@
                     </svg>
                   </div>
                   <div class="tool-content">
-                    <div class="tool-name">InterviewSubAgent Virtual Interview</div>
-                    <div class="tool-desc">Autonomous interview, capable of parallel multi-turn conversations with individuals in simulated world, collects unstructured perspective data and psychological states</div>
+                    <div class="tool-name">虚拟访谈代理</div>
+                    <div class="tool-desc">自主访谈能力，可与模拟世界中的个体进行并行多轮对话，收集非结构化观点数据和心理状态</div>
                   </div>
                 </div>
               </div>
@@ -224,7 +224,7 @@
                 <div class="profile-card-name">{{ selectedAgent.username }}</div>
                 <div class="profile-card-meta">
                   <span v-if="selectedAgent.name" class="profile-card-handle">@{{ selectedAgent.name }}</span>
-                  <span class="profile-card-profession">{{ selectedAgent.profession || 'Unknown profession' }}</span>
+                  <span class="profile-card-profession">{{ selectedAgent.profession || '未知职业' }}</span>
                 </div>
               </div>
               <button class="profile-card-toggle" @click="showFullProfile = !showFullProfile">
@@ -250,7 +250,7 @@
                 </svg>
               </div>
               <p class="empty-text">
-                {{ chatTarget === 'report_agent' ? 'Chat with Report Agent to deeply understand report content' : 'Chat with simulated individuals to learn their perspectives' }}
+                {{ chatTarget === 'report_agent' ? '与报告 Agent 深入对话以理解报告内容' : '与模拟个体对话以了解他们的观点' }}
               </p>
             </div>
             <div 
@@ -266,7 +266,7 @@
               <div class="message-content">
                 <div class="message-header">
                   <span class="sender-name">
-                    {{ msg.role === 'user' ? 'You' : (chatTarget === 'report_agent' ? 'Report Agent' : (selectedAgent?.username || 'Agent')) }}
+                    {{ msg.role === 'user' ? '我' : (chatTarget === 'report_agent' ? '报告 Agent' : (selectedAgent?.username || '智能体')) }}
                   </span>
                   <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
                 </div>
@@ -317,8 +317,8 @@
           <div class="survey-setup">
             <div class="setup-section">
               <div class="section-header">
-                <span class="section-title">Select survey targets</span>
-                <span class="selection-count">Selected {{ selectedAgents.size }} / {{ profiles.length }}</span>
+                <span class="section-title">选择调查目标</span>
+                <span class="selection-count">已选择 {{ selectedAgents.size }} / {{ profiles.length }}</span>
               </div>
               <div class="agents-grid">
                 <label 
@@ -335,7 +335,7 @@
                   <div class="checkbox-avatar">{{ (agent.username || 'A')[0] }}</div>
                   <div class="checkbox-info">
                     <span class="checkbox-name">{{ agent.username }}</span>
-                    <span class="checkbox-role">{{ agent.profession || 'Unknown profession' }}</span>
+                    <span class="checkbox-role">{{ agent.profession || '未知职业' }}</span>
                   </div>
                   <div class="checkbox-indicator">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3">
@@ -353,7 +353,7 @@
 
             <div class="setup-section">
               <div class="section-header">
-                <span class="section-title">Survey Question</span>
+                <span class="section-title">调查问题</span>
               </div>
               <textarea 
                 v-model="surveyQuestion"
@@ -369,7 +369,7 @@
               @click="submitSurvey"
             >
               <span v-if="isSurveying" class="loading-spinner"></span>
-              <span v-else>Send Survey</span>
+              <span v-else>发送调查</span>
             </button>
           </div>
 
@@ -665,7 +665,7 @@ const sendMessage = async () => {
     addLog(`发送失败: ${err.message}`)
     chatHistory.value.push({
       role: 'assistant',
-      content: `Sorry, an error occurred: ${err.message}`,
+      content: `抱歉，发生错误：${err.message}`,
       timestamp: new Date().toISOString()
     })
   } finally {
@@ -702,13 +702,13 @@ const sendToReportAgent = async (message) => {
     })
     addLog('报告Agent已回复')
   } else {
-    throw new Error(res.error || 'Request failed')
+    throw new Error(res.error || '请求失败')
   }
 }
 
 const sendToAgent = async (message) => {
   if (!selectedAgent.value || selectedAgentIndex.value === null) {
-    throw new Error('Please select a simulated individual first')
+    throw new Error('请先选择一个模拟个体')
   }
 
   addLog(`发送给 ${selectedAgent.value.username}: ${message.substring(0, 50)}...`)
@@ -766,7 +766,7 @@ const sendToAgent = async (message) => {
       throw new Error('No response data')
     }
   } else {
-    throw new Error(res.error || 'Request failed')
+    throw new Error(res.error || '请求失败')
   }
 }
 
@@ -859,7 +859,7 @@ const submitSurvey = async () => {
       surveyResults.value = surveyResultsList
       addLog(`收到 ${surveyResults.value.length} 条回复`)
     } else {
-      throw new Error(res.error || 'Request failed')
+      throw new Error(res.error || '请求失败')
     }
   } catch (err) {
     addLog(`调查问卷提交失败: ${err.message}`)

@@ -23,7 +23,7 @@
       <div class="header-right">
         <div class="workflow-step">
           <span class="step-num">Step 2/5</span>
-          <span class="step-name">Env Setup</span>
+          <span class="step-name">环境配置</span>
         </div>
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
@@ -110,7 +110,7 @@ const statusClass = computed(() => {
 
 const statusText = computed(() => {
   if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Ready'
+  if (currentStatus.value === 'completed') return '就绪'
   return 'Preparing'
 })
 
@@ -150,7 +150,7 @@ const handleNextStep = (params = {}) => {
 
   // Log simulation rounds configuration
   if (params.maxRounds) {
-    addLog(`Custom simulation rounds: ${params.maxRounds}`)
+    addLog(`自定义模拟轮次: ${params.maxRounds}`)
   } else {
     addLog('使用自动配置的模拟轮数')
   }

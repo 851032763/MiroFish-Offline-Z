@@ -166,11 +166,11 @@
                   <!-- Report Start -->
                   <template v-if="log.action === 'report_start'">
                     <div class="info-row">
-                      <span class="info-key">Simulation</span>
+                      <span class="info-key">模拟</span>
                       <span class="info-val mono">{{ log.details?.simulation_id }}</span>
                     </div>
                     <div class="info-row" v-if="log.details?.simulation_requirement">
-                      <span class="info-key">Requirement</span>
+                      <span class="info-key">需求</span>
                       <span class="info-val">{{ log.details.simulation_requirement }}</span>
                     </div>
                   </template>
@@ -182,7 +182,7 @@
                   <template v-if="log.action === 'planning_complete'">
                     <div class="status-message success">{{ log.details?.message }}</div>
                     <div class="outline-badge" v-if="log.details?.outline">
-                      {{ log.details.outline.sections?.length || 0 }} sections planned
+                      {{ log.details.outline.sections?.length || 0 }} 个章节已规划
                     </div>
                   </template>
 
@@ -347,12 +347,12 @@
                   <div class="footer-actions">
                     <!-- Tool Call: Show/Hide Params -->
                     <button v-if="log.action === 'tool_call' && log.details?.parameters" class="action-btn" @click.stop="toggleLogExpand(log)">
-                      {{ expandedLogs.has(log.timestamp) ? 'Hide Params' : 'Show Params' }}
+                      {{ expandedLogs.has(log.timestamp) ? '隐藏参数' : '显示参数' }}
                     </button>
                     
                     <!-- Tool Result: Raw/Structured View -->
                     <button v-if="log.action === 'tool_result'" class="action-btn" @click.stop="toggleRawResult(log.timestamp, $event)">
-                      {{ showRawResult[log.timestamp] ? 'Structured View' : 'Raw Output' }}
+                      {{ showRawResult[log.timestamp] ? '结构化视图' : '原始输出' }}
                     </button>
                     
                     <!-- LLM Response: Show/Hide Response -->
@@ -505,7 +505,7 @@ const toolConfig = {
     icon: 'globe' // Globe icon - represents panorama search
   },
   'interview_agents': {
-    name: 'Agent Interview',
+    name: '智能体访谈',
     color: 'green',
     icon: 'users' // User icon - represents conversation
   },
@@ -697,11 +697,11 @@ const parseInterview = (text) => {
   
   try {
     // Extract interview topic
-    const topicMatch = text.match(/\*\*Interview Topic:\*\*\s*(.+?)(?:\n|$)/)
+    const topicMatch = text.match(/\*\*访谈主题:\*\*\s*(.+?)(?:\n|$)/)
     if (topicMatch) result.topic = topicMatch[1].trim()
 
-    // Extract interview count (e.g., "5 / 9 Simulated Agents")
-    const countMatch = text.match(/\*\*Interviewees:\*\*\s*(\d+)\s*\/\s*(\d+)/)
+    // Extract interview count (e.g., "5 / 9 模拟智能体")
+    const countMatch = text.match(/\*\*受访者:\*\*\s*(\d+)\s*\/\s*(\d+)/)
     if (countMatch) {
       result.successCount = parseInt(countMatch[1])
       result.totalCount = parseInt(countMatch[2])
@@ -1467,7 +1467,7 @@ const InterviewDisplay = {
         
         // Selection Reason - Why this agent was selected
         props.result.interviews[activeIndex.value]?.selectionReason && h('div', { class: 'selection-reason' }, [
-          h('div', { class: 'reason-label' }, 'Selection Reason'),
+          h('div', { class: 'reason-label' }, '选择原因'),
           h('div', { class: 'reason-content' }, props.result.interviews[activeIndex.value].selectionReason)
         ]),
 
@@ -1991,16 +1991,16 @@ const getConnectorClass = (log, idx, total) => {
 
 const getActionLabel = (action) => {
   const labels = {
-    'report_start': 'Report Started',
-    'planning_start': 'Planning',
-    'planning_complete': 'Plan Complete',
-    'section_start': 'Section Start',
-    'section_content': 'Content Ready',
-    'section_complete': 'Section Done',
-    'tool_call': 'Tool Call',
-    'tool_result': 'Tool Result',
-    'llm_response': 'LLM Response',
-    'report_complete': 'Complete'
+    'report_start': '报告开始',
+    'planning_start': '规划中',
+    'planning_complete': '规划完成',
+    'section_start': '章节开始',
+    'section_content': '内容就绪',
+    'section_complete': '章节完成',
+    'tool_call': '工具调用',
+    'tool_result': '工具结果',
+    'llm_response': 'LLM 响应',
+    'report_complete': '完成'
   }
   return labels[action] || action
 }

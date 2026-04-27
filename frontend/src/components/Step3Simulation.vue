@@ -421,13 +421,13 @@ const doStartSimulation = async () => {
       startStatusPolling()
       startDetailPolling()
     } else {
-      startError.value = res.error || 'Start failed'
-      addLog(`✗ Start failed: ${res.error || 'Unknown error'}`)
+      startError.value = res.error || '启动失败'
+      addLog(`✗ 启动失败: ${res.error || '未知错误'}`)
       emit('update-status', 'error')
     }
   } catch (err) {
     startError.value = err.message
-    addLog(`✗ Start exception: ${err.message}`)
+    addLog(`✗ 启动异常: ${err.message}`)
     emit('update-status', 'error')
   } finally {
     isStarting.value = false

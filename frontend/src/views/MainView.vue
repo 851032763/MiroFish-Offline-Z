@@ -189,7 +189,7 @@ const initProject = async () => {
 const handleNewProject = async () => {
   const pending = getPendingUpload()
   if (!pending.isPending || pending.files.length === 0) {
-    error.value = 'No pending files found.'
+    error.value = '未找到待处理文件。'
     addLog('错误：未找到新项目的待处理文件。')
     return
   }

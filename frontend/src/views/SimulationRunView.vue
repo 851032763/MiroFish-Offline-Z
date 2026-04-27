@@ -23,7 +23,7 @@
       <div class="header-right">
         <div class="workflow-step">
           <span class="step-num">Step 3/5</span>
-          <span class="step-name">Simulation</span>
+          <span class="step-name">模拟运行</span>
         </div>
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
@@ -116,8 +116,8 @@ const statusClass = computed(() => {
 
 const statusText = computed(() => {
   if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Completed'
-  return 'Running'
+  if (currentStatus.value === 'completed') return '已完成'
+  return '运行中'
 })
 
 const isSimulating = computed(() => currentStatus.value === 'processing')

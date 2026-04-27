@@ -15,15 +15,15 @@
             :class="{ active: viewMode === mode }"
             @click="viewMode = mode"
           >
-            {{ { graph: 'Graph', split: 'Split', workbench: 'Workbench' }[mode] }}
+            {{ { graph: '图谱', split: '分屏', workbench: '工作台' }[mode] }}
           </button>
         </div>
       </div>
 
       <div class="header-right">
         <div class="workflow-step">
-          <span class="step-num">Step 5/5</span>
-          <span class="step-name">Interaction</span>
+          <span class="step-num">步骤 5/5</span>
+          <span class="step-name">交互探索</span>
         </div>
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">

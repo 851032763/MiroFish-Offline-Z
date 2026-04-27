@@ -23,7 +23,7 @@
       <div class="header-right">
         <div class="workflow-step">
           <span class="step-num">Step 4/5</span>
-          <span class="step-name">Report</span>
+          <span class="step-name">报告</span>
         </div>
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
@@ -110,7 +110,7 @@ const statusClass = computed(() => {
 
 const statusText = computed(() => {
   if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Completed'
+  if (currentStatus.value === 'completed') return '已完成'
   return 'Generating'
 })
 

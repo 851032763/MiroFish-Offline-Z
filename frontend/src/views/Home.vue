@@ -15,13 +15,13 @@
       <section class="hero-section" :style="s.heroSection">
         <div class="hero-left" :style="s.heroLeft">
           <div class="tag-row" :style="s.tagRow">
-            <span class="orange-tag" :style="s.orangeTag">Offline Multi-Agent Simulation Engine</span>
+            <span class="orange-tag" :style="s.orangeTag">离线多智能体模拟引擎</span>
             <span class="version-text" :style="s.versionText">/ v0.1-preview</span>
           </div>
 
           <h1 class="main-title" :style="s.mainTitle">
-            Upload Any Document<br>
-            <span class="gradient-text" :style="s.gradientText">Predict What Happens Next</span>
+            上传任意文档<br>
+            <span class="gradient-text" :style="s.gradientText">预测接下来会发生什么</span>
           </h1>
 
           <div class="hero-desc" :style="s.heroDesc">
@@ -49,28 +49,28 @@
         <!-- Left Column: Status & Steps -->
         <div class="left-panel" :style="s.leftPanel">
           <div class="panel-header" :style="s.panelHeader">
-            <span :style="s.statusDot">■</span> System Status
+            <span :style="s.statusDot">■</span> 系统状态
           </div>
 
-          <h2 class="section-title" :style="s.sectionTitle">Ready</h2>
+          <h2 class="section-title" :style="s.sectionTitle">就绪</h2>
           <p class="section-desc" :style="s.sectionDesc">
-            Local prediction engine on standby. Upload unstructured data to initialize a simulation.
+            本地预测引擎待机中。上传非结构化数据以初始化模拟。
           </p>
 
           <div class="metrics-row" :style="s.metricsRow">
             <div class="metric-card" :style="s.metricCard">
-              <div class="metric-value" :style="s.metricValue">Free</div>
-              <div class="metric-label" :style="s.metricLabel">Runs on your hardware</div>
+              <div class="metric-value" :style="s.metricValue">免费</div>
+              <div class="metric-label" :style="s.metricLabel">运行在您的硬件上</div>
             </div>
             <div class="metric-card" :style="s.metricCard">
-              <div class="metric-value" :style="s.metricValue">Private</div>
-              <div class="metric-label" :style="s.metricLabel">100% offline, no cloud</div>
+              <div class="metric-value" :style="s.metricValue">隐私</div>
+              <div class="metric-label" :style="s.metricLabel">100% 离线，无云端</div>
             </div>
           </div>
 
           <div class="steps-container" :style="s.stepsContainer">
             <div class="steps-header" :style="s.stepsHeader">
-               <span :style="s.diamondIcon">◇</span> Workflow Sequence
+               <span :style="s.diamondIcon">◇</span> 工作流程
             </div>
             <div :style="s.workflowList">
               <div v-for="(step, i) in steps" :key="i" :style="s.workflowItem">
@@ -115,7 +115,7 @@
               </div>
             </div>
 
-            <div :style="s.consoleDivider"><span :style="s.consoleDividerText">Parameters</span></div>
+            <div :style="s.consoleDivider"><span :style="s.consoleDividerText">参数配置</span></div>
 
             <div :style="s.consoleSection">
               <div class="console-header" :style="s.consoleHeader">
@@ -129,8 +129,8 @@
 
             <div :style="s.btnSection">
               <button :style="s.startEngineBtn" @click="startSimulation" :disabled="!canSubmit || loading">
-                <span v-if="!loading">Start Engine</span>
-                <span v-else>Initializing...</span>
+                <span v-if="!loading">启动引擎</span>
+                <span v-else>初始化中...</span>
                 <span>→</span>
               </button>
             </div>
@@ -218,11 +218,11 @@ const s = reactive({
 })
 
 const steps = [
-  { num: '01', title: 'Graph Build', desc: 'Extract reality seeds from your document, build knowledge graph with Neo4j + GraphRAG' },
-  { num: '02', title: 'Env Setup', desc: 'Generate agent personas, configure simulation parameters via local Ollama LLM' },
-  { num: '03', title: 'Simulation', desc: 'Run multi-agent simulation locally with dynamic memory updates and emergent behavior' },
-  { num: '04', title: 'Report', desc: 'ReportAgent analyzes the simulation results and generates a detailed prediction report' },
-  { num: '05', title: 'Interaction', desc: 'Chat with any agent from the simulated world or discuss findings with ReportAgent' },
+  { num: '01', title: '图谱构建', desc: '从文档中提取现实种子，使用 Neo4j + GraphRAG 构建知识图谱' },
+  { num: '02', title: '环境配置', desc: '通过本地 Ollama LLM 生成智能体画像并配置模拟参数' },
+  { num: '03', title: '模拟运行', desc: '在本地运行多智能体模拟，支持动态记忆更新和涌现行为' },
+  { num: '04', title: '报告生成', desc: 'ReportAgent 分析模拟结果并生成详细的预测报告' },
+  { num: '05', title: '交互探索', desc: '与模拟世界中的任意智能体对话，或与 ReportAgent 讨论发现' },
 ]
 
 const router = useRouter()
