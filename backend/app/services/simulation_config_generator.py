@@ -573,13 +573,18 @@ class SimulationConfigGenerator:
     "reasoning": "本次事件的时间配置说明"
 }}
 
-字段说明:
-- total_simulation_hours (int): 总模拟时长, 24-168小时, 突发事件短, 持续话题长
-- minutes_per_round (int): 每轮时间, 30-120分钟, 推荐60分钟
-- agents_per_hour_min (int): 每小时最小激活Agent数 (范围: 1-{max_agents_allowed})
-- agents_per_hour_max (int): 每小时最大激活Agent数 (范围: 1-{max_agents_allowed})
-- peak_hours (int数组): 高峰时段, 根据事件参与者调整
-- off_peak_hours (int数组): 低谷时段, 通常为深夜/凌晨
+字段说明：
+- total_simulation_hours (int): 模拟总时长，24-168小时，突发事件短、持续话题长
+- minutes_per_round (int): 每轮时长，30-120分钟，建议60分钟
+- agents_per_hour_min (int): 每小时最少激活Agent数（取值范围: 1-{max_agents_allowed}）
+- agents_per_hour_max (int): 每小时最多激活Agent数（取值范围: 1-{max_agents_allowed}）
+- peak_hours (int数组): 高峰时段，根据事件参与群体调整
+- off_peak_hours (int数组): 低谷时段，通常深夜凌晨
+- morning_hours (int数组): 早间时段
+- work_hours (int数组): 工作时段
+- reasoning (string): 简要说明为什么这样配置"""
+
+        system_prompt = "你是社交媒体模拟专家。返回纯JSON格式，时间配置需符合模拟场景中目标用户群体的作息习惯。"
 
         try:
             return self._call_llm_with_retry(prompt, system_prompt)
