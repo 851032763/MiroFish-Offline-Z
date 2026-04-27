@@ -203,7 +203,7 @@
       <!-- Loading State -->
       <div v-else-if="loading" class="graph-state">
         <div class="loading-spinner"></div>
-        <p>Loading graph data...</p>
+        <p>正在加载图数据...</p>
       </div>
 
       <!-- Waiting/Empty State -->

@@ -171,7 +171,7 @@
               <div class="loading-ring"></div>
               <div class="loading-ring"></div>
             </div>
-            <p class="loading-text">Loading graph data...</p>
+            <p class="loading-text">正在加载图数据...</p>
           </div>
           
           <!-- Waiting for build -->
@@ -806,7 +806,7 @@ const pollTaskStatus = async (taskId) => {
         // Update progress display to complete status
         buildProgress.value = {
           progress: 100,
-          message: 'Build complete, loading graph...'
+          message: '构建完成，正在加载图...'
         }
 
         // Reload project data to get graph_id

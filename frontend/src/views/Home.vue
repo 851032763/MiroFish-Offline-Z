@@ -89,8 +89,8 @@
           <div class="console-box" :style="s.consoleBox">
             <div :style="s.consoleSection">
               <div class="console-header" :style="s.consoleHeader">
-                <span>01 / Reality Seeds</span>
-                <span>Supported: PDF, MD, TXT</span>
+                <span>01 / 现实种子</span>
+                <span>支持格式：PDF, MD, TXT</span>
               </div>
               <div
                 :style="s.uploadZone"
@@ -119,10 +119,10 @@
 
             <div :style="s.consoleSection">
               <div class="console-header" :style="s.consoleHeader">
-                <span>>_ 02 / Simulation Prompt</span>
+                <span>>_ 02 / 模拟提示词</span>
               </div>
               <div :style="s.inputWrapper">
-                <textarea v-model="formData.simulationRequirement" :style="s.codeInput" placeholder="// Describe your simulation or prediction goal in natural language" rows="6" :disabled="loading"></textarea>
+                <textarea v-model="formData.simulationRequirement" :style="s.codeInput" placeholder="// 用自然语言输入模拟或预测需求" rows="6" :disabled="loading"></textarea>
                 <div :style="s.modelBadge">Engine: Ollama + Neo4j (local)</div>
               </div>
             </div>

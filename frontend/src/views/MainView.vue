@@ -178,7 +178,7 @@ const handleGoBack = () => {
 // --- Data Logic ---
 
 const initProject = async () => {
-  addLog('Project view initialized.')
+  addLog('项目视图已初始化。')
   if (currentProjectId.value === 'new') {
     await handleNewProject()
   } else {
@@ -190,7 +190,7 @@ const handleNewProject = async () => {
   const pending = getPendingUpload()
   if (!pending.isPending || pending.files.length === 0) {
     error.value = 'No pending files found.'
-    addLog('Error: No pending files found for new project.')
+    addLog('错误：未找到新项目的待处理文件。')
     return
   }
   
@@ -198,7 +198,7 @@ const handleNewProject = async () => {
     loading.value = true
     currentPhase.value = 0
     ontologyProgress.value = { message: 'Uploading and analyzing docs...' }
-    addLog('Starting ontology generation: Uploading files...')
+    addLog('开始生成本体：正在上传文件...')
     
     const formData = new FormData()
     pending.files.forEach(f => formData.append('files', f))
@@ -272,7 +272,7 @@ const startBuildGraph = async () => {
   try {
     currentPhase.value = 1
     buildProgress.value = { progress: 0, message: 'Starting build...' }
-    addLog('Initiating graph build...')
+    addLog('正在启动图构建...')
     
     const res = await buildGraph({ project_id: currentProjectId.value })
     if (res.success) {
@@ -290,7 +290,7 @@ const startBuildGraph = async () => {
 }
 
 const startGraphPolling = () => {
-  addLog('Started polling for graph data...')
+  addLog('已开始轮询图数据...')
   fetchGraphData()
   graphPollTimer = setInterval(fetchGraphData, 10000)
 }
@@ -332,7 +332,7 @@ const pollTaskStatus = async (taskId) => {
       buildProgress.value = { progress: task.progress || 0, message: task.message }
       
       if (task.status === 'completed') {
-        addLog('Graph build task completed.')
+        addLog('图构建任务已完成。')
         stopPolling()
         stopGraphPolling() // Stop polling, do final load
         currentPhase.value = 2
@@ -361,12 +361,12 @@ const loadGraph = async (graphId) => {
     const res = await getGraphData(graphId)
     if (res.success) {
       graphData.value = res.data
-      addLog('Graph data loaded successfully.')
+      addLog('图数据加载成功。')
     } else {
       addLog(`Failed to load graph data: ${res.error}`)
     }
   } catch (e) {
-    addLog(`Exception loading graph: ${e.message}`)
+    addLog(`加载图异常: ${e.message}`)
   } finally {
     graphLoading.value = false
   }
@@ -374,7 +374,7 @@ const loadGraph = async (graphId) => {
 
 const refreshGraph = () => {
   if (projectData.value?.graph_id) {
-    addLog('Manual graph refresh triggered.')
+    addLog('已触发手动图刷新。')
     loadGraph(projectData.value.graph_id)
   }
 }
@@ -390,7 +390,7 @@ const stopGraphPolling = () => {
   if (graphPollTimer) {
     clearInterval(graphPollTimer)
     graphPollTimer = null
-    addLog('Graph polling stopped.')
+    addLog('图轮询已停止。')
   }
 }
 

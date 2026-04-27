@@ -58,7 +58,7 @@
                       <path d="M12 2a10 10 0 0 1 10 10" stroke-width="4" stroke="#4B5563" stroke-linecap="round"></path>
                     </svg>
                   </div>
-                  <span class="loading-text">Generating {{ section.title }}...</span>
+                  <span class="loading-text">正在生成 {{ section.title }}...</span>
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@
 
           <!-- Next Step Button - Show after completion -->
           <button v-if="isComplete" class="next-step-btn" @click="goToInteraction">
-            <span>Enter Deep Interaction</span>
+            <span>进入深度互动</span>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -320,7 +320,7 @@
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                      <span>Section "{{ log.section_title }}" content generated</span>
+                      <span>章节 "{{ log.section_title }}" 内容已生成</span>
                     </div>
                     <div v-if="expandedLogs.has(log.timestamp) && log.details?.response" class="llm-content">
                       <pre>{{ log.details.response }}</pre>
@@ -334,7 +334,7 @@
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
                       </svg>
-                      <span>Report Generation Complete</span>
+                      <span>报告生成完成</span>
                     </div>
                   </template>
                 </div>
@@ -368,7 +368,7 @@
           <!-- Empty State -->
           <div v-if="agentLogs.length === 0 && !isComplete" class="workflow-empty">
             <div class="empty-pulse"></div>
-            <span>Waiting for agent activity...</span>
+            <span>等待Agent活动...</span>
           </div>
         </div>
       </div>
@@ -1032,7 +1032,7 @@ const InsightDisplay = {
           class: ['insight-tab', { active: activeTab.value === 'subqueries' }],
           onClick: () => { activeTab.value = 'subqueries' }
         }, [
-          h('span', { class: 'tab-label' }, `Sub-questions (${props.result.subQueries.length})`)
+          h('span', { class: 'tab-label' }, `子问题 (${props.result.subQueries.length})`)
         ])
       ]),
       
@@ -1107,7 +1107,7 @@ const InsightDisplay = {
         // Sub-queries Tab
         activeTab.value === 'subqueries' && props.result.subQueries.length > 0 && h('div', { class: 'subqueries-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'Drift Query Generated Sub-questions'),
+            h('span', { class: 'panel-title' }, '漂移查询生成的子问题'),
             h('span', { class: 'panel-count' }, `Total ${props.result.subQueries.length} items`)
           ]),
           h('div', { class: 'subqueries-list' },
@@ -1709,7 +1709,7 @@ const statusClass = computed(() => {
 
 const statusText = computed(() => {
   if (isComplete.value) return 'Completed'
-  if (agentLogs.value.length > 0) return 'Generating...'
+  if (agentLogs.value.length > 0) return '生成中...'
   return 'Waiting'
 })
 

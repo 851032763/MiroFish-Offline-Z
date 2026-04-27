@@ -140,7 +140,7 @@ const toggleMaximize = (target) => {
 // --- Data Logic ---
 const loadReportData = async () => {
   try {
-    addLog(`Loading report data: ${currentReportId.value}`)
+    addLog(`正在加载报告数据: ${currentReportId.value}`)
     
     // Get report info to retrieve simulation_id
     const reportRes = await getReport(currentReportId.value)
@@ -184,7 +184,7 @@ const loadGraph = async (graphId) => {
     const res = await getGraphData(graphId)
     if (res.success) {
       graphData.value = res.data
-      addLog('Graph data loaded successfully')
+      addLog('图数据加载成功')
     }
   } catch (err) {
     addLog(`Graph load failed: ${err.message}`)
@@ -208,7 +208,7 @@ watch(() => route.params.reportId, (newId) => {
 }, { immediate: true })
 
 onMounted(() => {
-  addLog('InteractionView initialized')
+  addLog('InteractionView 已初始化')
   loadReportData()
 })
 </script>

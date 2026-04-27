@@ -181,7 +181,7 @@
             </div>
             <!-- Playback unavailable notice -->
             <div class="modal-playback-hint">
-              <span class="hint-text">Step3 "Start Simulation" and Step5 "Deep Interaction" must be launched during execution and do not support history playback</span>
+              <span class="hint-text">步骤3"开始模拟"和步骤5"深度互动"必须在执行过程中启动，不支持历史回放</span>
             </div>
           </div>
         </div>

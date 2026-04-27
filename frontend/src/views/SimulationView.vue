@@ -146,13 +146,13 @@ const handleGoBack = () => {
 }
 
 const handleNextStep = (params = {}) => {
-  addLog('Entering Step 3: Simulation')
+  addLog('正在进入步骤3: 模拟')
 
   // Log simulation rounds configuration
   if (params.maxRounds) {
     addLog(`Custom simulation rounds: ${params.maxRounds}`)
   } else {
-    addLog('Using auto-configured simulation rounds')
+    addLog('使用自动配置的模拟轮数')
   }
 
   // Build route parameters
@@ -184,7 +184,7 @@ const checkAndStopRunningSimulation = async () => {
     const envStatusRes = await getEnvStatus({ simulation_id: currentSimulationId.value })
 
     if (envStatusRes.success && envStatusRes.data?.env_alive) {
-      addLog('Simulation environment running, shutting down...')
+      addLog('模拟环境正在运行，正在关闭...')
 
       // Try graceful shutdown
       try {
@@ -194,9 +194,9 @@ const checkAndStopRunningSimulation = async () => {
         })
 
         if (closeRes.success) {
-          addLog('✓ Simulation environment closed')
+          addLog('✓ 模拟环境已关闭')
         } else {
-          addLog(`Failed to close simulation env: ${closeRes.error || 'Unknown error'}`)
+          addLog(`关闭模拟环境失败: ${closeRes.error || '未知错误'}`)
           // If graceful shutdown fails, try force stop
           await forceStopSimulation()
         }
@@ -209,7 +209,7 @@ const checkAndStopRunningSimulation = async () => {
       // Environment not running, but process may still exist, check simulation status
       const simRes = await getSimulation(currentSimulationId.value)
       if (simRes.success && simRes.data?.status === 'running') {
-        addLog('Simulation is running, stopping...')
+        addLog('模拟正在运行，正在停止...')
         await forceStopSimulation()
       }
     }
@@ -226,9 +226,9 @@ const forceStopSimulation = async () => {
   try {
     const stopRes = await stopSimulation({ simulation_id: currentSimulationId.value })
     if (stopRes.success) {
-      addLog('✓ Simulation force stopped')
+      addLog('✓ 模拟已强制停止')
     } else {
-      addLog(`Failed to force stop simulation: ${stopRes.error || 'Unknown error'}`)
+      addLog(`强制停止模拟失败: ${stopRes.error || '未知错误'}`)
     }
   } catch (err) {
     addLog(`Force stop exception: ${err.message}`)
@@ -237,7 +237,7 @@ const forceStopSimulation = async () => {
 
 const loadSimulationData = async () => {
   try {
-    addLog(`Loading simulation data: ${currentSimulationId.value}`)
+    addLog(`正在加载模拟数据: ${currentSimulationId.value}`)
 
     // Get simulation info
     const simRes = await getSimulation(currentSimulationId.value)
@@ -258,10 +258,10 @@ const loadSimulationData = async () => {
         }
       }
     } else {
-      addLog(`Failed to load simulation data: ${simRes.error || 'Unknown error'}`)
+      addLog(`加载模拟数据失败: ${simRes.error || '未知错误'}`)
     }
   } catch (err) {
-    addLog(`Load error: ${err.message}`)
+    addLog(`加载错误: ${err.message}`)
   }
 }
 
@@ -271,10 +271,10 @@ const loadGraph = async (graphId) => {
     const res = await getGraphData(graphId)
     if (res.success) {
       graphData.value = res.data
-      addLog('Graph data loaded successfully')
+      addLog('图数据加载成功')
     }
   } catch (err) {
-    addLog(`Graph load failed: ${err.message}`)
+    addLog(`图加载失败: ${err.message}`)
   } finally {
     graphLoading.value = false
   }
@@ -287,7 +287,7 @@ const refreshGraph = () => {
 }
 
 onMounted(async () => {
-  addLog('SimulationView initialized')
+  addLog('SimulationView 已初始化')
 
   // Check and stop running simulation (when user returns from Step 3)
   await checkAndStopRunningSimulation()

@@ -97,7 +97,7 @@
           @click="handleNextStep"
         >
           <span v-if="isGeneratingReport" class="loading-spinner-small"></span>
-          {{ isGeneratingReport ? 'Starting...' : 'Start Generating Report' }} 
+          {{ isGeneratingReport ? '开始中...' : '开始生成报告' }} 
           <span v-if="!isGeneratingReport" class="arrow-icon">→</span>
         </button>
       </div>
@@ -207,7 +207,7 @@
                   </div>
                   <div v-if="action.action_args?.post_id" class="comment-context">
                     <svg class="icon-small" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                    <span>Reply to post #{{ action.action_args.post_id }}</span>
+                    <span>回复帖子 #{{ action.action_args.post_id }}</span>
                   </div>
                 </template>
 
@@ -264,7 +264,7 @@
 
         <div v-if="allActions.length === 0" class="waiting-state">
           <div class="pulse-ring"></div>
-          <span>Waiting for agent actions...</span>
+          <span>等待Agent行动...</span>
         </div>
       </div>
     </div>
@@ -379,7 +379,7 @@ const resetAllState = () => {
 // Start simulation
 const doStartSimulation = async () => {
   if (!props.simulationId) {
-    addLog('Error: Missing simulationId')
+    addLog('错误：缺少 simulationId')
     return
   }
 
@@ -388,7 +388,7 @@ const doStartSimulation = async () => {
 
   isStarting.value = true
   startError.value = null
-  addLog('Starting dual-platform parallel simulation...')
+  addLog('正在启动双平台并行模拟...')
   emit('update-status', 'processing')
 
   try {
@@ -404,15 +404,15 @@ const doStartSimulation = async () => {
       addLog(`Set max simulation rounds: ${props.maxRounds}`)
     }
 
-    addLog('Dynamic graph update mode enabled')
+    addLog('动态图更新模式已启用')
 
     const res = await startSimulation(params)
 
     if (res.success && res.data) {
       if (res.data.force_restarted) {
-        addLog('✓ Cleaned old simulation logs and restarted simulation')
+        addLog('✓ 已清理旧的模拟日志并重新启动模拟')
       }
-      addLog('✓ Simulation engine started successfully')
+      addLog('✓ 模拟引擎启动成功')
       addLog(`  ├─ PID: ${res.data.process_pid || '-'}`)
 
       phase.value = 1
@@ -439,21 +439,21 @@ const handleStopSimulation = async () => {
   if (!props.simulationId) return
 
   isStopping.value = true
-  addLog('Stopping simulation...')
+  addLog('正在停止模拟...')
 
   try {
     const res = await stopSimulation({ simulation_id: props.simulationId })
 
     if (res.success) {
-      addLog('✓ Simulation stopped')
+      addLog('✓ 模拟已停止')
       phase.value = 2
       stopPolling()
       emit('update-status', 'completed')
     } else {
-      addLog(`Stop failed: ${res.error || 'Unknown error'}`)
+      addLog(`停止失败: ${res.error || '未知错误'}`)
     }
   } catch (err) {
-    addLog(`Stop exception: ${err.message}`)
+    addLog(`停止异常: ${err.message}`)
   } finally {
     isStopping.value = false
   }
@@ -517,9 +517,9 @@ const fetchRunStatus = async () => {
 
       if (isCompleted || platformsCompleted) {
         if (platformsCompleted && !isCompleted) {
-          addLog('✓ Detected all platform simulations have ended')
+          addLog('✓ 检测到所有平台模拟都已结束')
         }
-        addLog('✓ Simulation completed')
+        addLog('✓ 模拟完成')
         phase.value = 2
         stopPolling()
         emit('update-status', 'completed')
@@ -640,17 +640,17 @@ const formatActionTime = (timestamp) => {
 
 const handleNextStep = async () => {
   if (!props.simulationId) {
-    addLog('Error: Missing simulationId')
+    addLog('错误：缺少 simulationId')
     return
   }
 
   if (isGeneratingReport.value) {
-    addLog('Report generation request sent, please wait...')
+    addLog('已发送报告生成请求，请稍候...')
     return
   }
 
   isGeneratingReport.value = true
-  addLog('Starting report generation...')
+  addLog('开始生成报告...')
 
   try {
     const res = await generateReport({
@@ -660,16 +660,16 @@ const handleNextStep = async () => {
 
     if (res.success && res.data) {
       const reportId = res.data.report_id
-      addLog(`✓ Report generation task started: ${reportId}`)
+      addLog(`✓ 报告生成任务已启动: ${reportId}`)
 
       // Navigate to report page
       router.push({ name: 'Report', params: { reportId } })
     } else {
-      addLog(`✗ Failed to start report generation: ${res.error || 'Unknown error'}`)
+      addLog(`✗ 启动报告生成失败: ${res.error || '未知错误'}`)
       isGeneratingReport.value = false
     }
   } catch (err) {
-    addLog(`✗ Report generation exception: ${err.message}`)
+    addLog(`✗ 报告生成异常: ${err.message}`)
     isGeneratingReport.value = false
   }
 }
@@ -685,7 +685,7 @@ watch(() => props.systemLogs?.length, () => {
 })
 
 onMounted(() => {
-  addLog('Step3 Simulation initialization')
+  addLog('步骤3模拟初始化')
   if (props.simulationId) {
     doStartSimulation()
   }

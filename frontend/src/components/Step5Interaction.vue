@@ -58,7 +58,7 @@
                       <path d="M12 2a10 10 0 0 1 10 10" stroke-width="4" stroke="#4B5563" stroke-linecap="round"></path>
                     </svg>
                   </div>
-                  <span class="loading-text">Generating {{ section.title }}...</span>
+                  <span class="loading-text">正在生成 {{ section.title }}...</span>
                 </div>
               </div>
             </div>
@@ -98,7 +98,7 @@
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
               </svg>
-              <span>Chat with Report Agent</span>
+              <span>与报告Agent对话</span>
             </button>
             <div class="agent-dropdown" v-if="profiles.length > 0">
               <button 
@@ -110,7 +110,7 @@
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                <span>{{ selectedAgent ? selectedAgent.username : 'Chat with any individual' }}</span>
+                <span>{{ selectedAgent ? selectedAgent.username : '与任意个体对话' }}</span>
                 <svg class="dropdown-arrow" :class="{ open: showAgentDropdown }" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
@@ -141,7 +141,7 @@
                 <path d="M9 11l3 3L22 4"></path>
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
               </svg>
-              <span>Send survey to the world</span>
+              <span>向世界发送调查问卷</span>
             </button>
           </div>
         </div>
@@ -292,7 +292,7 @@
             <textarea 
               v-model="chatInput"
               class="chat-input"
-              placeholder="Type your question..."
+              placeholder="输入您的问题..."
               @keydown.enter.exact.prevent="sendMessage"
               :disabled="isSending || (!selectedAgent && chatTarget === 'agent')"
               rows="1"
@@ -345,9 +345,9 @@
                 </label>
               </div>
               <div class="selection-actions">
-                <button class="action-link" @click="selectAllAgents">Select All</button>
+                <button class="action-link" @click="selectAllAgents">全选</button>
                 <span class="action-divider">|</span>
-                <button class="action-link" @click="clearAgentSelection">Clear</button>
+                <button class="action-link" @click="clearAgentSelection">清除</button>
               </div>
             </div>
 
@@ -358,7 +358,7 @@
               <textarea 
                 v-model="surveyQuestion"
                 class="survey-input"
-                placeholder="Enter the question you want to ask all selected targets..."
+                placeholder="输入您想向所有选中目标提问的问题..."
                 rows="3"
               ></textarea>
             </div>
@@ -535,7 +535,7 @@ const selectAgent = (agent, idx) => {
 
   // Restore this Agent's chat history
   chatHistory.value = chatHistoryCache.value[`agent_${idx}`] || []
-  addLog(`Selected conversation target: ${agent.username}`)
+  addLog(`已选择对话目标: ${agent.username}`)
 }
 
 const formatTime = (timestamp) => {
@@ -662,7 +662,7 @@ const sendMessage = async () => {
       await sendToAgent(message)
     }
   } catch (err) {
-    addLog(`Send failed: ${err.message}`)
+    addLog(`发送失败: ${err.message}`)
     chatHistory.value.push({
       role: 'assistant',
       content: `Sorry, an error occurred: ${err.message}`,
@@ -677,7 +677,7 @@ const sendMessage = async () => {
 }
 
 const sendToReportAgent = async (message) => {
-  addLog(`Send to Report Agent: ${message.substring(0, 50)}...`)
+  addLog(`发送给报告Agent: ${message.substring(0, 50)}...`)
 
   // Build chat history for API
   const historyForApi = chatHistory.value
@@ -700,7 +700,7 @@ const sendToReportAgent = async (message) => {
       content: res.data.response || res.data.answer || 'No response',
       timestamp: new Date().toISOString()
     })
-    addLog('Report Agent replied')
+    addLog('报告Agent已回复')
   } else {
     throw new Error(res.error || 'Request failed')
   }
@@ -711,7 +711,7 @@ const sendToAgent = async (message) => {
     throw new Error('Please select a simulated individual first')
   }
 
-  addLog(`Send to ${selectedAgent.value.username}: ${message.substring(0, 50)}...`)
+  addLog(`发送给 ${selectedAgent.value.username}: ${message.substring(0, 50)}...`)
 
   // Build prompt with chat history
   let prompt = message
@@ -719,9 +719,9 @@ const sendToAgent = async (message) => {
     const historyContext = chatHistory.value
       .filter(msg => msg.content !== message)
       .slice(-6)
-      .map(msg => `${msg.role === 'user' ? 'Questioner' : 'You'}: ${msg.content}`)
+      .map(msg => `${msg.role === 'user' ? '提问者' : '你'}: ${msg.content}`)
       .join('\n')
-    prompt = `Here is our previous conversation:\n${historyContext}\n\nNow my new question is: ${message}`
+    prompt = `以下是我们的对话历史:\n${historyContext}\n\n现在我的新问题是: ${message}`
   }
 
   const res = await interviewAgents({
@@ -761,7 +761,7 @@ const sendToAgent = async (message) => {
         content: responseContent,
         timestamp: new Date().toISOString()
       })
-      addLog(`${selectedAgent.value.username} replied`)
+      addLog(`${selectedAgent.value.username} 已回复`)
     } else {
       throw new Error('No response data')
     }
@@ -803,7 +803,7 @@ const submitSurvey = async () => {
   if (selectedAgents.value.size === 0 || !surveyQuestion.value.trim()) return
 
   isSurveying.value = true
-  addLog(`Sending survey to ${selectedAgents.value.size} targets...`)
+  addLog(`正在向 ${selectedAgents.value.size} 个目标发送调查问卷...`)
 
   try {
     const interviews = Array.from(selectedAgents.value).map(idx => ({
@@ -857,12 +857,12 @@ const submitSurvey = async () => {
       }
 
       surveyResults.value = surveyResultsList
-      addLog(`Received ${surveyResults.value.length} replies`)
+      addLog(`收到 ${surveyResults.value.length} 条回复`)
     } else {
       throw new Error(res.error || 'Request failed')
     }
   } catch (err) {
-    addLog(`Survey submission failed: ${err.message}`)
+    addLog(`调查问卷提交失败: ${err.message}`)
   } finally {
     isSurveying.value = false
   }
@@ -873,7 +873,7 @@ const loadReportData = async () => {
   if (!props.reportId) return
 
   try {
-    addLog(`Loading report data: ${props.reportId}`)
+    addLog(`正在加载报告数据: ${props.reportId}`)
 
     // Get report info
     const reportRes = await getReport(props.reportId)
@@ -882,7 +882,7 @@ const loadReportData = async () => {
       await loadAgentLogs()
     }
   } catch (err) {
-    addLog(`Failed to load report: ${err.message}`)
+    addLog(`加载报告失败: ${err.message}`)
   }
 }
 
@@ -904,10 +904,10 @@ const loadAgentLogs = async () => {
         }
       })
 
-      addLog('Report data loading completed')
+      addLog('报告数据加载完成')
     }
   } catch (err) {
-    addLog(`Failed to load report logs: ${err.message}`)
+    addLog(`加载报告日志失败: ${err.message}`)
   }
 }
 
@@ -918,10 +918,10 @@ const loadProfiles = async () => {
     const res = await getSimulationProfilesRealtime(props.simulationId, 'reddit')
     if (res.success && res.data) {
       profiles.value = res.data.profiles || []
-      addLog(`Loaded ${profiles.value.length} simulated individuals`)
+      addLog(`已加载 ${profiles.value.length} 个模拟个体`)
     }
   } catch (err) {
-    addLog(`Failed to load simulated individuals: ${err.message}`)
+    addLog(`加载模拟个体失败: ${err.message}`)
   }
 }
 
@@ -935,7 +935,7 @@ const handleClickOutside = (e) => {
 
 // Lifecycle
 onMounted(() => {
-  addLog('Step5 Interaction initialized')
+  addLog('步骤5互动已初始化')
   loadReportData()
   loadProfiles()
   document.addEventListener('click', handleClickOutside)

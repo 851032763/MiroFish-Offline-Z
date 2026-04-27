@@ -146,7 +146,7 @@ const toggleMaximize = (target) => {
 
 const handleGoBack = async () => {
   // Close running simulation before returning to Step 2
-  addLog('Returning to Step 2, closing simulation...')
+  addLog('正在返回步骤2，关闭模拟...')
 
   // Stop polling
   stopGraphRefresh()
@@ -156,36 +156,36 @@ const handleGoBack = async () => {
     const envStatusRes = await getEnvStatus({ simulation_id: currentSimulationId.value })
     
     if (envStatusRes.success && envStatusRes.data?.env_alive) {
-      addLog('Closing simulation environment...')
+      addLog('正在关闭模拟环境...')
       try {
         await closeSimulationEnv({
           simulation_id: currentSimulationId.value,
           timeout: 10
         })
-        addLog('✓ Simulation environment closed')
+        addLog('✓ 模拟环境已关闭')
       } catch (closeErr) {
-        addLog(`Failed to close env, force stopping...`)
+        addLog(`关闭环境失败，强制停止...`)
         try {
           await stopSimulation({ simulation_id: currentSimulationId.value })
-          addLog('✓ Simulation force stopped')
+          addLog('✓ 模拟已强制停止')
         } catch (stopErr) {
-          addLog(`Force stop failed: ${stopErr.message}`)
+          addLog(`强制停止失败: ${stopErr.message}`)
         }
       }
     } else {
       // Environment not running, check if process needs to be stopped
       if (isSimulating.value) {
-        addLog('Stopping simulation process...')
+        addLog('正在停止模拟进程...')
         try {
           await stopSimulation({ simulation_id: currentSimulationId.value })
-          addLog('✓ Simulation stopped')
+          addLog('✓ 模拟已停止')
         } catch (err) {
-          addLog(`Stop simulation failed: ${err.message}`)
+          addLog(`停止模拟失败: ${err.message}`)
         }
       }
     }
   } catch (err) {
-    addLog(`Failed to check simulation status: ${err.message}`)
+    addLog(`检查模拟状态失败: ${err.message}`)
   }
 
   // Return to Step 2 (Env Setup)
@@ -195,13 +195,13 @@ const handleGoBack = async () => {
 const handleNextStep = () => {
   // Step3Simulation component will handle report generation and routing
   // This method is for backup only
-  addLog('Entering Step 4: Report')
+  addLog('正在进入步骤4: 报告')
 }
 
 // --- Data Logic ---
 const loadSimulationData = async () => {
   try {
-    addLog(`Loading simulation data: ${currentSimulationId.value}`)
+    addLog(`正在加载模拟数据: ${currentSimulationId.value}`)
 
     // Get simulation information
     const simRes = await getSimulation(currentSimulationId.value)
@@ -216,7 +216,7 @@ const loadSimulationData = async () => {
           addLog(`Time config: ${minutesPerRound.value} min/round`)
         }
       } catch (configErr) {
-        addLog(`Failed to get time config, using default: ${minutesPerRound.value} min/round`)
+        addLog(`获取时间配置失败，使用默认值: ${minutesPerRound.value} 分钟/轮`)
       }
 
       // Get project information
@@ -233,10 +233,10 @@ const loadSimulationData = async () => {
         }
       }
     } else {
-      addLog(`Failed to load simulation data: ${simRes.error || 'Unknown error'}`)
+      addLog(`加载模拟数据失败: ${simRes.error || '未知错误'}`)
     }
   } catch (err) {
-    addLog(`Load error: ${err.message}`)
+    addLog(`加载错误: ${err.message}`)
   }
 }
 
@@ -252,11 +252,11 @@ const loadGraph = async (graphId) => {
     if (res.success) {
       graphData.value = res.data
       if (!isSimulating.value) {
-        addLog('Graph data loaded successfully')
+        addLog('图数据加载成功')
       }
     }
   } catch (err) {
-    addLog(`Graph load failed: ${err.message}`)
+    addLog(`图加载失败: ${err.message}`)
   } finally {
     graphLoading.value = false
   }
@@ -273,7 +273,7 @@ let graphRefreshTimer = null
 
 const startGraphRefresh = () => {
   if (graphRefreshTimer) return
-  addLog('Graph auto-refresh started (30s)')
+  addLog('图自动刷新已启动 (30秒)')
   // Refresh immediately, then every 30 seconds
   graphRefreshTimer = setInterval(refreshGraph, 30000)
 }
@@ -282,7 +282,7 @@ const stopGraphRefresh = () => {
   if (graphRefreshTimer) {
     clearInterval(graphRefreshTimer)
     graphRefreshTimer = null
-    addLog('Graph auto-refresh stopped')
+    addLog('图自动刷新已停止')
   }
 }
 
@@ -295,7 +295,7 @@ watch(isSimulating, (newValue) => {
 }, { immediate: true })
 
 onMounted(() => {
-  addLog('SimulationRunView initialized')
+  addLog('SimulationRunView 已初始化')
 
   // Log maxRounds config (value already retrieved from query param during init)
   if (maxRounds.value) {

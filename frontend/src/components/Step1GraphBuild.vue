@@ -10,7 +10,7 @@
           </div>
           <div class="step-status">
             <span v-if="currentPhase > 0" class="badge success">Completed</span>
-            <span v-else-if="currentPhase === 0" class="badge processing">Generating</span>
+            <span v-else-if="currentPhase === 0" class="badge processing">生成中</span>
             <span v-else class="badge pending">Waiting</span>
           </div>
         </div>
@@ -24,7 +24,7 @@
           <!-- Loading / Progress -->
           <div v-if="currentPhase === 0 && ontologyProgress" class="progress-section">
             <div class="spinner-sm"></div>
-            <span>{{ ontologyProgress.message || 'Analyzing documents...' }}</span>
+            <span>{{ ontologyProgress.message || '正在分析文档...' }}</span>
           </div>
 
           <!-- Detail Overlay -->
