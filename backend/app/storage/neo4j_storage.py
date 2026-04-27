@@ -1,8 +1,8 @@
 """
-Neo4jStorage — Neo4j Community Edition implementation of GraphStorage.
+Neo4jStorage — GraphStorage 的 Neo4j 社区版实现。
 
-Replaces all Zep Cloud API calls with local Neo4j Cypher queries.
-Includes: CRUD, NER/RE-based text ingestion, hybrid search, retry logic.
+将所有 Zep Cloud API 调用替换为本地 Neo4j Cypher 查询。
+包括：增删改查、基于 NER/RE 的文本摄入、混合搜索、重试逻辑。
 """
 
 import json
@@ -30,10 +30,10 @@ logger = logging.getLogger('mirofish.neo4j_storage')
 
 
 class Neo4jStorage(GraphStorage):
-    """Neo4j CE implementation of the GraphStorage interface."""
+    """GraphStorage 接口的 Neo4j 社区版实现。"""
 
     MAX_RETRIES = 3
-    RETRY_DELAY_BASE = 1  # seconds
+    RETRY_DELAY_BASE = 1  # 秒
 
     def __init__(
         self,
@@ -54,30 +54,31 @@ class Neo4jStorage(GraphStorage):
         self._ner = ner_extractor or NERExtractor()
         self._search = SearchService(self._embedding)
 
-        # Initialize schema (indexes, constraints)
+        # 初始化模式（索引、约束）
         self._ensure_schema()
 
     def close(self):
-        """Close the Neo4j driver connection."""
+        """关闭 Neo4j 驱动连接。"""
         self._driver.close()
 
     def _ensure_schema(self):
-        """Create indexes and constraints if they don't exist."""
+        """如果索引和约束不存在，则创建它们。"""
         with self._driver.session() as session:
             for query in neo4j_schema.ALL_SCHEMA_QUERIES:
                 try:
                     session.run(query)
                 except Exception as e:
-                    logger.warning(f"Schema query warning (may already exist): {e}")
+                    logger.warning(f"模式查询警告（可能已存在）：{e}")
 
     # ----------------------------------------------------------------
-    # Retry wrapper
+    # 重试包装器
     # ----------------------------------------------------------------
 
     def _call_with_retry(self, func, *args, **kwargs):
         """
-        Execute a function with retry on Neo4j transient errors.
-        Replaces 3 different retry patterns from the Zep codebase.
+        在 Neo4j 临时错误时重试执行函数。
+
+        替换 Zep 代码库中的 3 种不同重试模式。
         """
         last_error = None
         for attempt in range(self.MAX_RETRIES):
@@ -87,8 +88,8 @@ class Neo4jStorage(GraphStorage):
                 last_error = e
                 wait = self.RETRY_DELAY_BASE * (2 ** attempt)
                 logger.warning(
-                    f"Neo4j transient error (attempt {attempt + 1}/{self.MAX_RETRIES}), "
-                    f"retrying in {wait}s: {e}"
+                    f"Neo4j 临时错误（尝试 {attempt + 1}/{self.MAX_RETRIES}），"
+                    f"{wait} 秒后重试：{e}"
                 )
                 time.sleep(wait)
             except Exception:
@@ -97,7 +98,7 @@ class Neo4jStorage(GraphStorage):
         raise last_error  # type: ignore
 
     # ----------------------------------------------------------------
-    # Graph lifecycle
+    # 图生命周期
     # ----------------------------------------------------------------
 
     def create_graph(self, name: str, description: str = "") -> str:
@@ -124,17 +125,17 @@ class Neo4jStorage(GraphStorage):
         with self._driver.session() as session:
             self._call_with_retry(session.execute_write, _create)
 
-        logger.info(f"Created graph '{name}' with id {graph_id}")
+        logger.info(f"已创建图 '{name}'，ID 为 {graph_id}")
         return graph_id
 
     def delete_graph(self, graph_id: str) -> None:
         def _delete(tx):
-            # Delete all entities and their relationships
+            # 删除所有实体及其关系
             tx.run(
                 "MATCH (n {graph_id: $gid}) DETACH DELETE n",
                 gid=graph_id,
             )
-            # Delete graph node
+            # 删除图节点
             tx.run(
                 "MATCH (g:Graph {graph_id: $gid}) DELETE g",
                 gid=graph_id,
@@ -142,7 +143,7 @@ class Neo4jStorage(GraphStorage):
 
         with self._driver.session() as session:
             self._call_with_retry(session.execute_write, _delete)
-        logger.info(f"Deleted graph {graph_id}")
+        logger.info(f"已删除图 {graph_id}")
 
     def set_ontology(self, graph_id: str, ontology: Dict[str, Any]) -> None:
         def _set(tx):
@@ -170,47 +171,47 @@ class Neo4jStorage(GraphStorage):
             return {}
 
     # ----------------------------------------------------------------
-    # Add data (NER → nodes/edges)
+    # 添加数据（NER → 节点/边）
     # ----------------------------------------------------------------
 
     def add_text(self, graph_id: str, text: str) -> str:
-        """Process text: NER/RE → batch embed → create nodes/edges → return episode_id."""
+        """处理文本：NER/RE → 批量嵌入 → 创建节点/边 → 返回 episode_id。"""
         episode_id = str(uuid.uuid4())
         now = datetime.now(timezone.utc).isoformat()
 
-        # Get ontology for NER guidance
+        # 获取用于 NER 指导的本体
         ontology = self.get_ontology(graph_id)
 
-        # Extract entities and relations
-        logger.info(f"[add_text] Starting NER extraction for chunk ({len(text)} chars)...")
+        # 提取实体和关系
+        logger.info(f"[add_text] 开始对文本块进行 NER 提取（{len(text)} 字符）...")
         extraction = self._ner.extract(text, ontology)
         entities = extraction.get("entities", [])
         relations = extraction.get("relations", [])
 
         logger.info(
-            f"[add_text] NER done: {len(entities)} entities, {len(relations)} relations"
+            f"[add_text] NER 完成：{len(entities)} 个实体，{len(relations)} 个关系"
         )
 
-        # --- Batch embed all texts at once ---
+        # --- 一次性批量嵌入所有文本 ---
         entity_summaries = [f"{e['name']} ({e['type']})" for e in entities]
         fact_texts = [r.get("fact", f"{r['source']} {r['type']} {r['target']}") for r in relations]
         all_texts_to_embed = entity_summaries + fact_texts
 
         all_embeddings: list = []
         if all_texts_to_embed:
-            logger.info(f"[add_text] Batch-embedding {len(all_texts_to_embed)} texts...")
+            logger.info(f"[add_text] 正在批量嵌入 {len(all_texts_to_embed)} 个文本...")
             try:
                 all_embeddings = self._embedding.embed_batch(all_texts_to_embed)
             except Exception as e:
-                logger.warning(f"[add_text] Batch embedding failed, falling back to empty: {e}")
+                logger.warning(f"[add_text] 批量嵌入失败，回退到空列表：{e}")
                 all_embeddings = [[] for _ in all_texts_to_embed]
 
         entity_embeddings = all_embeddings[:len(entities)]
         relation_embeddings = all_embeddings[len(entities):]
-        logger.info(f"[add_text] Embedding done, writing to Neo4j...")
+        logger.info(f"[add_text] 嵌入完成，正在写入 Neo4j...")
 
         with self._driver.session() as session:
-            # Create episode node
+            # 创建 episode 节点
             def _create_episode(tx):
                 tx.run(
                     """
@@ -230,7 +231,7 @@ class Neo4jStorage(GraphStorage):
 
             self._call_with_retry(session.execute_write, _create_episode)
 
-            # MERGE entities (upsert by graph_id + name + primary label)
+            # MERGE 实体（按 graph_id + name + 主标签进行 upsert）
             entity_uuid_map: Dict[str, str] = {}  # name_lower -> uuid
             for idx, entity in enumerate(entities):
                 ename = entity["name"]
@@ -245,7 +246,7 @@ class Neo4jStorage(GraphStorage):
                 def _merge_entity(tx, _uuid=e_uuid, _name=ename, _type=etype,
                                   _attrs=attrs, _embedding=embedding,
                                   _summary=summary_text, _now=now):
-                    # MERGE by graph_id + lowercase name to deduplicate
+                    # 按 graph_id + 小写名称 MERGE 以去重
                     result = tx.run(
                         """
                         MERGE (n:Entity {graph_id: $gid, name_lower: $name_lower})
@@ -278,7 +279,7 @@ class Neo4jStorage(GraphStorage):
                 actual_uuid = self._call_with_retry(session.execute_write, _merge_entity)
                 entity_uuid_map[ename.lower()] = actual_uuid
 
-                # Add entity type label
+                # 添加实体类型标签
                 if etype and etype != "Entity":
                     try:
                         def _add_label(tx, _name_lower=ename.lower()):
@@ -289,9 +290,9 @@ class Neo4jStorage(GraphStorage):
                             )
                         self._call_with_retry(session.execute_write, _add_label)
                     except Exception as e:
-                        logger.warning(f"Failed to add label '{etype}' to '{ename}': {e}")
+                        logger.warning(f"无法为 '{ename}' 添加标签 '{etype}'：{e}")
 
-            # Create relations
+            # 创建关系
             for idx, relation in enumerate(relations):
                 source_name = relation["source"]
                 target_name = relation["target"]
@@ -303,8 +304,8 @@ class Neo4jStorage(GraphStorage):
 
                 if not source_uuid or not target_uuid:
                     logger.warning(
-                        f"Skipping relation {source_name}->{target_name}: "
-                        f"entity not found in extraction results"
+                        f"跳过关系 {source_name}->{target_name}："
+                        f"在提取结果中未找到实体"
                     )
                     continue
 
@@ -346,7 +347,7 @@ class Neo4jStorage(GraphStorage):
 
                 self._call_with_retry(session.execute_write, _create_relation)
 
-        logger.info(f"[add_text] Chunk done: episode={episode_id}")
+        logger.info(f"[add_text] 文本块处理完成：episode={episode_id}")
         return episode_id
 
     def add_text_batch(
@@ -356,7 +357,7 @@ class Neo4jStorage(GraphStorage):
         batch_size: int = 3,
         progress_callback: Optional[Callable] = None,
     ) -> List[str]:
-        """Batch-add text chunks with progress reporting."""
+        """批量添加文本块，并报告进度。"""
         episode_ids = []
         total = len(chunks)
 
@@ -370,7 +371,7 @@ class Neo4jStorage(GraphStorage):
                 progress = (i + 1) / total
                 progress_callback(progress)
 
-            logger.info(f"Processed chunk {i + 1}/{total}")
+            logger.info(f"已处理文本块 {i + 1}/{total}")
 
         return episode_ids
 
@@ -380,12 +381,12 @@ class Neo4jStorage(GraphStorage):
         progress_callback: Optional[Callable] = None,
         timeout: int = 600,
     ) -> None:
-        """No-op — processing is synchronous in Neo4j."""
+        """无操作 —— 在 Neo4j 中处理是同步的。"""
         if progress_callback:
             progress_callback(1.0)
 
     # ----------------------------------------------------------------
-    # Read nodes
+    # 读取节点
     # ----------------------------------------------------------------
 
     def get_all_nodes(self, graph_id: str, limit: int = 2000) -> List[Dict[str, Any]]:
@@ -420,7 +421,7 @@ class Neo4jStorage(GraphStorage):
             return self._call_with_retry(session.execute_read, _read)
 
     def get_node_edges(self, node_uuid: str) -> List[Dict[str, Any]]:
-        """O(1) Cypher — NOT full scan + filter like the old Zep code."""
+        """O(1) Cypher —— 不像旧的 Zep 代码那样进行全表扫描 + 过滤。"""
         def _read(tx):
             result = tx.run(
                 """
@@ -439,7 +440,7 @@ class Neo4jStorage(GraphStorage):
 
     def get_nodes_by_label(self, graph_id: str, label: str) -> List[Dict[str, Any]]:
         def _read(tx):
-            # Dynamic label in query (safe — label comes from ontology, not user input)
+            # 查询中的动态标签（安全 —— 标签来自本体，而非用户输入）
             query = f"""
                 MATCH (n:Entity:`{label}` {{graph_id: $gid}})
                 RETURN n, labels(n) AS labels
@@ -451,7 +452,7 @@ class Neo4jStorage(GraphStorage):
             return self._call_with_retry(session.execute_read, _read)
 
     # ----------------------------------------------------------------
-    # Read edges
+    # 读取边
     # ----------------------------------------------------------------
 
     def get_all_edges(self, graph_id: str) -> List[Dict[str, Any]]:
@@ -473,7 +474,7 @@ class Neo4jStorage(GraphStorage):
             return self._call_with_retry(session.execute_read, _read)
 
     # ----------------------------------------------------------------
-    # Search
+    # 搜索
     # ----------------------------------------------------------------
 
     def search(
@@ -484,10 +485,10 @@ class Neo4jStorage(GraphStorage):
         scope: str = "edges",
     ):
         """
-        Hybrid search — returns results matching the scope.
+        混合搜索 —— 返回匹配范围的结果。
 
-        Returns a dict with 'edges' and/or 'nodes' lists
-        (callers like zep_tools will wrap into SearchResult).
+        返回包含 'edges' 和/或 'nodes' 列表的字典
+       （调用者如 zep_tools 会将其包装为 SearchResult）。
         """
         result = {"edges": [], "nodes": [], "query": query}
 
@@ -505,26 +506,26 @@ class Neo4jStorage(GraphStorage):
         return result
 
     # ----------------------------------------------------------------
-    # Graph info
+    # 图信息
     # ----------------------------------------------------------------
 
     def get_graph_info(self, graph_id: str) -> Dict[str, Any]:
         def _read(tx):
-            # Count nodes
+            # 统计节点数
             node_result = tx.run(
                 "MATCH (n:Entity {graph_id: $gid}) RETURN count(n) AS cnt",
                 gid=graph_id,
             )
             node_count = node_result.single()["cnt"]
 
-            # Count edges
+            # 统计边数
             edge_result = tx.run(
                 "MATCH ()-[r:RELATION {graph_id: $gid}]->() RETURN count(r) AS cnt",
                 gid=graph_id,
             )
             edge_count = edge_result.single()["cnt"]
 
-            # Distinct entity types
+            # 不同的实体类型
             label_result = tx.run(
                 """
                 MATCH (n:Entity {graph_id: $gid})
@@ -548,11 +549,11 @@ class Neo4jStorage(GraphStorage):
 
     def get_graph_data(self, graph_id: str) -> Dict[str, Any]:
         """
-        Full graph dump with enriched edge format (for frontend).
-        Includes derived fields: fact_type, source_node_name, target_node_name.
+        完整图转储，包含增强的边格式（用于前端）。
+        包含派生字段：fact_type、source_node_name、target_node_name。
         """
         def _read(tx):
-            # Get all nodes
+            # 获取所有节点
             node_result = tx.run(
                 """
                 MATCH (n:Entity {graph_id: $gid})
@@ -567,7 +568,7 @@ class Neo4jStorage(GraphStorage):
                 nodes.append(nd)
                 node_map[nd["uuid"]] = nd["name"]
 
-            # Get all edges with source/target node names (JOIN)
+            # 获取所有边及其源/目标节点名称（JOIN）
             edge_result = tx.run(
                 """
                 MATCH (src:Entity)-[r:RELATION {graph_id: $gid}]->(tgt:Entity)
@@ -579,11 +580,11 @@ class Neo4jStorage(GraphStorage):
             edges = []
             for record in edge_result:
                 ed = self._edge_to_dict(record["r"], record["src_uuid"], record["tgt_uuid"])
-                # Enriched fields for frontend
+                # 前端用的增强字段
                 ed["fact_type"] = ed["name"]
                 ed["source_node_name"] = record["src_name"] or ""
                 ed["target_node_name"] = record["tgt_name"] or ""
-                # Legacy alias
+                # 旧版本别名
                 ed["episodes"] = ed.get("episode_ids", [])
                 edges.append(ed)
 
@@ -599,12 +600,12 @@ class Neo4jStorage(GraphStorage):
             return self._call_with_retry(session.execute_read, _read)
 
     # ----------------------------------------------------------------
-    # Dict conversion helpers
+    # 字典转换辅助方法
     # ----------------------------------------------------------------
 
     @staticmethod
     def _node_to_dict(node, labels: List[str]) -> Dict[str, Any]:
-        """Convert Neo4j node to the standard node dict format."""
+        """将 Neo4j 节点转换为标准节点字典格式。"""
         props = dict(node)
         attrs_json = props.pop("attributes_json", "{}")
         try:
@@ -612,7 +613,7 @@ class Neo4jStorage(GraphStorage):
         except (json.JSONDecodeError, TypeError):
             attributes = {}
 
-        # Remove internal fields from dict
+        # 从字典中移除内部字段
         props.pop("embedding", None)
         props.pop("name_lower", None)
 
@@ -627,7 +628,7 @@ class Neo4jStorage(GraphStorage):
 
     @staticmethod
     def _edge_to_dict(rel, source_uuid: str, target_uuid: str) -> Dict[str, Any]:
-        """Convert Neo4j relationship to the standard edge dict format."""
+        """将 Neo4j 关系转换为标准边字典格式。"""
         props = dict(rel)
         attrs_json = props.pop("attributes_json", "{}")
         try:
@@ -635,7 +636,7 @@ class Neo4jStorage(GraphStorage):
         except (json.JSONDecodeError, TypeError):
             attributes = {}
 
-        # Remove internal fields
+        # 移除内部字段
         props.pop("fact_embedding", None)
 
         episode_ids = props.get("episode_ids", [])

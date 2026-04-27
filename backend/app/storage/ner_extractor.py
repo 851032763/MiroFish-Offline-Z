@@ -1,9 +1,9 @@
 """
-NER/RE Extractor — entity and relation extraction via local LLM
+NER/RE Extractor — 通过本地 LLM 进行实体和关系提取
 
-Replaces Zep Cloud's built-in NER/RE pipeline.
-Uses LLMClient.chat_json() with a structured prompt to extract
-entities and relations from text chunks, guided by the graph's ontology.
+替换 Zep Cloud 内置的 NER/RE 流水线。
+使用 LLMClient.chat_json() 和结构化提示词从文本块中
+提取实体和关系，由图的本体指导。
 """
 
 import logging
@@ -44,7 +44,7 @@ _USER_PROMPT = """从以下文本中提取实体和关系:
 
 
 class NERExtractor:
-    """Extract entities and relations from text using local LLM."""
+    """使用本地 LLM 从文本中提取实体和关系。"""
 
     def __init__(self, llm_client: Optional[LLMClient] = None, max_retries: int = 2):
         self.llm = llm_client or LLMClient()
@@ -52,14 +52,14 @@ class NERExtractor:
 
     def extract(self, text: str, ontology: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Extract entities and relations from text, guided by ontology.
+        在本体的指导下从文本中提取实体和关系。
 
         Args:
-            text: Input text chunk
-            ontology: Dict with 'entity_types' and 'relation_types' from graph
+            text: 输入文本块
+            ontology: 来自图的字典，包含 'entity_types' 和 'relation_types'
 
         Returns:
-            Dict with 'entities' and 'relations' lists:
+            包含 'entities' 和 'relations' 列表的字典：
             {
                 "entities": [{"name": str, "type": str, "attributes": dict}],
                 "relations": [{"source": str, "target": str, "type": str, "fact": str}]
@@ -82,7 +82,7 @@ class NERExtractor:
             try:
                 result = self.llm.chat_json(
                     messages=messages,
-                    temperature=0.1,  # Low temp for extraction precision
+                    temperature=0.1,  # 低温度以保证提取精度
                     max_tokens=4096,
                 )
                 return self._validate_and_clean(result, ontology)
@@ -90,26 +90,26 @@ class NERExtractor:
             except ValueError as e:
                 last_error = e
                 logger.warning(
-                    f"NER extraction failed (attempt {attempt + 1}): invalid JSON — {e}"
+                    f"NER 提取失败（尝试 {attempt + 1}）：无效的 JSON —— {e}"
                 )
             except Exception as e:
                 last_error = e
-                logger.error(f"NER extraction error: {e}")
+                logger.error(f"NER 提取错误：{e}")
                 if attempt >= self.max_retries:
                     break
 
         logger.error(
-            f"NER extraction failed after {self.max_retries + 1} attempts: {last_error}"
+            f"NER 提取在 {self.max_retries + 1} 次尝试后失败：{last_error}"
         )
         return {"entities": [], "relations": []}
 
     def _format_ontology(self, ontology: Dict[str, Any]) -> str:
-        """Format ontology dict into readable text for the LLM prompt."""
+        """将本体字典格式化为 LLM 提示词可读的文本。"""
         parts = []
 
         entity_types = ontology.get("entity_types", [])
         if entity_types:
-            parts.append("Entity Types:")
+            parts.append("实体类型：")
             for et in entity_types:
                 if isinstance(et, dict):
                     name = et.get("name", str(et))
@@ -127,7 +127,7 @@ class NERExtractor:
 
         relation_types = ontology.get("relation_types", ontology.get("edge_types", []))
         if relation_types:
-            parts.append("\nRelation Types:")
+            parts.append("\n关系类型：")
             for rt in relation_types:
                 if isinstance(rt, dict):
                     name = rt.get("name", str(rt))
@@ -144,18 +144,18 @@ class NERExtractor:
                     parts.append(f"  - {rt}")
 
         if not parts:
-            parts.append("No specific ontology defined. Extract all entities and relations you find.")
+            parts.append("未定义特定的本体。提取你发现的所有实体和关系。")
 
         return "\n".join(parts)
 
     def _validate_and_clean(
         self, result: Dict[str, Any], ontology: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Validate and normalize LLM output."""
+        """验证和规范化 LLM 输出。"""
         entities = result.get("entities", [])
         relations = result.get("relations", [])
 
-        # Get valid type names from ontology
+        # 从本体中获取有效的类型名称
         valid_entity_types = set()
         for et in ontology.get("entity_types", []):
             if isinstance(et, dict):
@@ -170,7 +170,7 @@ class NERExtractor:
             else:
                 valid_relation_types.add(str(rt).strip())
 
-        # Clean entities
+        # 清理实体
         cleaned_entities = []
         seen_names = set()
         for entity in entities:
@@ -181,15 +181,15 @@ class NERExtractor:
             if not name:
                 continue
 
-            # Deduplicate by normalized name
+            # 按规范化名称去重
             name_lower = name.lower()
             if name_lower in seen_names:
                 continue
             seen_names.add(name_lower)
 
-            # If ontology has types, warn but keep entities with unknown types
+            # 如果本体有类型定义，发出警告但保留未知类型的实体
             if valid_entity_types and etype not in valid_entity_types:
-                logger.debug(f"Entity '{name}' has type '{etype}' not in ontology, keeping anyway")
+                logger.debug(f"实体 '{name}' 的类型 '{etype}' 不在本体中，仍然保留")
 
             cleaned_entities.append({
                 "name": name,
@@ -197,7 +197,7 @@ class NERExtractor:
                 "attributes": entity.get("attributes", {}),
             })
 
-        # Clean relations
+        # 清理关系
         cleaned_relations = []
         entity_names_lower = {e["name"].lower() for e in cleaned_entities}
         for relation in relations:
@@ -211,8 +211,8 @@ class NERExtractor:
             if not source or not target:
                 continue
 
-            # Ensure source and target entities exist
-            # (they might not if LLM hallucinated a relation without the entity)
+            # 确保源和目标实体存在
+           # （如果 LLM 幻觉出关系但没有实体，它们可能不存在）
             if source.lower() not in entity_names_lower:
                 cleaned_entities.append({
                     "name": source,

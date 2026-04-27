@@ -1,8 +1,8 @@
 """
-SearchService — hybrid search (vector + keyword) over Neo4j graph data.
+SearchService — Neo4j 图数据的混合搜索（向量 + 关键词）。
 
-Replaces Zep Cloud's built-in search with reranker.
-Scoring: 0.7 * vector_score + 0.3 * keyword_score (BM25 via fulltext index).
+替换 Zep Cloud 内置的带重排序器的搜索。
+评分规则：0.7 * vector_score + 0.3 * keyword_score（通过全文索引的 BM25）。
 """
 
 import logging
@@ -14,7 +14,7 @@ from .embedding_service import EmbeddingService
 
 logger = logging.getLogger('mirofish.search')
 
-# Cypher for vector search on edges (facts)
+# 用于边（事实）向量搜索的 Cypher
 _VECTOR_SEARCH_EDGES = """
 CALL db.index.vector.queryRelationships('fact_embedding', $limit, $query_vector)
 YIELD relationship, score
@@ -24,7 +24,7 @@ ORDER BY score DESC
 LIMIT $limit
 """
 
-# Cypher for vector search on nodes (entities)
+# 用于节点（实体）向量搜索的 Cypher
 _VECTOR_SEARCH_NODES = """
 CALL db.index.vector.queryNodes('entity_embedding', $limit, $query_vector)
 YIELD node, score
@@ -34,7 +34,7 @@ ORDER BY score DESC
 LIMIT $limit
 """
 
-# Cypher for fulltext (BM25) search on edges
+# 用于边全文（BM25）搜索的 Cypher
 _FULLTEXT_SEARCH_EDGES = """
 CALL db.index.fulltext.queryRelationships('fact_fulltext', $query_text)
 YIELD relationship, score
@@ -44,7 +44,7 @@ ORDER BY score DESC
 LIMIT $limit
 """
 
-# Cypher for fulltext search on nodes
+# 用于节点全文搜索的 Cypher
 _FULLTEXT_SEARCH_NODES = """
 CALL db.index.fulltext.queryNodes('entity_fulltext', $query_text)
 YIELD node, score
@@ -55,8 +55,9 @@ LIMIT $limit
 """
 
 
+
 class SearchService:
-    """Hybrid search combining vector similarity and keyword matching."""
+    """结合向量相似性和关键词匹配的混合搜索。"""
 
     VECTOR_WEIGHT = 0.7
     KEYWORD_WEIGHT = 0.3
@@ -72,23 +73,23 @@ class SearchService:
         limit: int = 10,
     ) -> List[Dict[str, Any]]:
         """
-        Search edges (facts/relations) using hybrid scoring.
+        使用混合评分搜索边（事实/关系）。
 
-        Returns list of dicts with edge properties + 'score'.
+        返回包含边属性 + 'score' 的字典列表。
         """
         query_vector = self.embedding.embed(query)
 
-        # Vector search
+        # 向量搜索
         vector_results = self._run_edge_vector_search(
-            session, graph_id, query_vector, limit * 2
+            session, graph_id, query_vector,             limit * 2
         )
 
-        # Keyword search
+        # 关键词搜索
         keyword_results = self._run_edge_keyword_search(
             session, graph_id, query, limit * 2
         )
 
-        # Merge and rank
+        # 合并并排名
         merged = self._merge_results(
             vector_results, keyword_results, key="uuid", limit=limit
         )
@@ -102,9 +103,9 @@ class SearchService:
         limit: int = 10,
     ) -> List[Dict[str, Any]]:
         """
-        Search nodes (entities) using hybrid scoring.
+        使用混合评分搜索节点（实体）。
 
-        Returns list of dicts with node properties + 'score'.
+        返回包含节点属性 + 'score' 的字典列表。
         """
         query_vector = self.embedding.embed(query)
 
@@ -137,15 +138,15 @@ class SearchService:
                 for record in result
             ]
         except Exception as e:
-            logger.warning(f"Vector edge search failed (index may not exist yet): {e}")
+            logger.warning(f"边向量搜索失败（索引可能尚不存在）：{e}")
             return []
 
     def _run_edge_keyword_search(
         self, session: Neo4jSession, graph_id: str, query: str, limit: int
     ) -> List[Dict[str, Any]]:
-        """Run fulltext (BM25) search on edge fact + name."""
+        """在边的事实和名称上运行全文（BM25）搜索。"""
         try:
-            # Escape special Lucene characters in query
+            # 转义查询中的特殊 Lucene 字符
             safe_query = self._escape_lucene(query)
             result = session.run(
                 _FULLTEXT_SEARCH_EDGES,
@@ -158,13 +159,13 @@ class SearchService:
                 for record in result
             ]
         except Exception as e:
-            logger.warning(f"Keyword edge search failed: {e}")
+            logger.warning(f"边关键词搜索失败：{e}")
             return []
 
     def _run_node_vector_search(
         self, session: Neo4jSession, graph_id: str, query_vector: List[float], limit: int
     ) -> List[Dict[str, Any]]:
-        """Run vector similarity search on entity embedding."""
+        """在实体嵌入上运行向量相似性搜索。"""
         try:
             result = session.run(
                 _VECTOR_SEARCH_NODES,
@@ -177,13 +178,13 @@ class SearchService:
                 for record in result
             ]
         except Exception as e:
-            logger.warning(f"Vector node search failed: {e}")
+            logger.warning(f"节点向量搜索失败：{e}")
             return []
 
     def _run_node_keyword_search(
         self, session: Neo4jSession, graph_id: str, query: str, limit: int
     ) -> List[Dict[str, Any]]:
-        """Run fulltext search on entity name + summary."""
+        """在实体名称和摘要上运行全文搜索。"""
         try:
             safe_query = self._escape_lucene(query)
             result = session.run(
@@ -197,7 +198,7 @@ class SearchService:
                 for record in result
             ]
         except Exception as e:
-            logger.warning(f"Keyword node search failed: {e}")
+            logger.warning(f"节点关键词搜索失败：{e}")
             return []
 
     def _merge_results(
@@ -208,19 +209,19 @@ class SearchService:
         limit: int,
     ) -> List[Dict[str, Any]]:
         """
-        Merge vector and keyword results with weighted scoring.
+        使用加权评分合并向量和关键词结果。
 
-        Normalizes scores to [0, 1] range before combining.
+        在组合前将分数标准化到 [0, 1] 范围。
         """
-        # Normalize vector scores
+        # 标准化向量分数
         v_max = max((r["_score"] for r in vector_results), default=1.0) or 1.0
         v_scores = {r[key]: r["_score"] / v_max for r in vector_results}
 
-        # Normalize keyword scores
+        # 标准化关键词分数
         k_max = max((r["_score"] for r in keyword_results), default=1.0) or 1.0
         k_scores = {r[key]: r["_score"] / k_max for r in keyword_results}
 
-        # Build combined result map
+        # 构建组合结果映射
         all_items: Dict[str, Dict[str, Any]] = {}
         for r in vector_results:
             all_items[r[key]] = {k: v for k, v in r.items() if k != "_score"}
@@ -228,7 +229,7 @@ class SearchService:
             if r[key] not in all_items:
                 all_items[r[key]] = {k: v for k, v in r.items() if k != "_score"}
 
-        # Calculate hybrid scores
+        # 计算混合分数
         scored = []
         for uid, item in all_items.items():
             v = v_scores.get(uid, 0.0)
@@ -237,13 +238,13 @@ class SearchService:
             item["score"] = combined
             scored.append(item)
 
-        # Sort by combined score descending
+        # 按混合分数降序排序
         scored.sort(key=lambda x: x["score"], reverse=True)
         return scored[:limit]
 
     @staticmethod
     def _escape_lucene(query: str) -> str:
-        """Escape special Lucene query characters."""
+        """转义特殊的 Lucene 查询字符。"""
         special = r'+-&|!(){}[]^"~*?:\/'
         result = []
         for ch in query:

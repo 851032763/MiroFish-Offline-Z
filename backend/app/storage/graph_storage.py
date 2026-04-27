@@ -1,8 +1,8 @@
 """
-GraphStorage — abstract interface for graph storage backends.
+GraphStorage — 图存储后端的抽象接口。
 
-All Zep Cloud calls are replaced by this abstraction.
-Current implementation: Neo4jStorage (neo4j_storage.py).
+所有 Zep Cloud 调用都由该抽象替代。
+当前实现: Neo4jStorage (neo4j_storage.py)。
 """
 
 from abc import ABC, abstractmethod
@@ -10,33 +10,33 @@ from typing import Dict, Any, List, Optional, Callable
 
 
 class GraphStorage(ABC):
-    """Abstract interface for graph storage backends."""
+    """图存储后端的抽象接口。"""
 
-    # --- Graph lifecycle ---
+    # --- 图生命周期 ---
 
     @abstractmethod
     def create_graph(self, name: str, description: str = "") -> str:
-        """Create a new graph. Returns graph_id."""
+        """创建一个新图。返回 graph_id。"""
 
     @abstractmethod
     def delete_graph(self, graph_id: str) -> None:
-        """Delete a graph and all its nodes/edges."""
+        """删除图及其所有节点/边。"""
 
     @abstractmethod
     def set_ontology(self, graph_id: str, ontology: Dict[str, Any]) -> None:
-        """Store ontology (entity types + relation types) for a graph."""
+        """为图存储本体 (实体类型 + 关系类型)。"""
 
     @abstractmethod
     def get_ontology(self, graph_id: str) -> Dict[str, Any]:
-        """Retrieve stored ontology for a graph."""
+        """检索图的本体。"""
 
-    # --- Add data ---
+    # --- 添加数据 ---
 
     @abstractmethod
     def add_text(self, graph_id: str, text: str) -> str:
         """
-        Process text: NER/RE → create nodes/edges → return episode_id.
-        This is synchronous (unlike Zep Cloud's async episodes).
+        处理文本: NER/RE → 创建节点/边 → 返回 episode_id。
+        这是同步的 (不像 Zep Cloud 的异步 episodes)。
         """
 
     @abstractmethod
@@ -47,7 +47,7 @@ class GraphStorage(ABC):
         batch_size: int = 3,
         progress_callback: Optional[Callable] = None,
     ) -> List[str]:
-        """Batch-add text chunks. Returns list of episode_ids."""
+        """批量添加文本块。返回 episode_id 列表。"""
 
     @abstractmethod
     def wait_for_processing(
@@ -57,36 +57,36 @@ class GraphStorage(ABC):
         timeout: int = 600,
     ) -> None:
         """
-        Wait for episodes to be processed.
-        For Neo4j: no-op (synchronous processing).
-        Kept for API compatibility with Zep-era callers.
+        等待 episodes 处理完成。
+        对于 Neo4j: 无操作 (同步处理)。
+        为与 Zep 时代调用者的 API 兼容性而保留。
         """
 
-    # --- Read nodes ---
+    # --- 读取节点 ---
 
     @abstractmethod
     def get_all_nodes(self, graph_id: str, limit: int = 2000) -> List[Dict[str, Any]]:
-        """Get all nodes in a graph (with optional limit)."""
+        """获取图中的所有节点 (可选限制)。"""
 
     @abstractmethod
     def get_node(self, uuid: str) -> Optional[Dict[str, Any]]:
-        """Get a single node by UUID."""
+        """通过 UUID 获取单个节点。"""
 
     @abstractmethod
     def get_node_edges(self, node_uuid: str) -> List[Dict[str, Any]]:
-        """Get all edges connected to a node (O(1) via Cypher, not full scan)."""
+        """获取连接到节点的所有边 (通过 Cypher O(1) 复杂度, 非全扫描)。"""
 
     @abstractmethod
     def get_nodes_by_label(self, graph_id: str, label: str) -> List[Dict[str, Any]]:
-        """Get nodes filtered by entity type label."""
+        """按实体类型标签筛选节点。"""
 
-    # --- Read edges ---
+    # --- 读取边 ---
 
     @abstractmethod
     def get_all_edges(self, graph_id: str) -> List[Dict[str, Any]]:
-        """Get all edges in a graph."""
+        """获取图中的所有边。"""
 
-    # --- Search ---
+    # --- 搜索 ---
 
     @abstractmethod
     def search(
@@ -97,30 +97,30 @@ class GraphStorage(ABC):
         scope: str = "edges",
     ):
         """
-        Hybrid search (vector + keyword) over graph data.
+        图数据的混合搜索 (向量 + 关键词)。
 
         Args:
-            graph_id: Graph to search in
-            query: Search query text
-            limit: Max results
-            scope: "edges", "nodes", or "both"
+            graph_id: 要搜索的图
+            query: 搜索查询文本
+            limit: 最大结果数
+            scope: "edges"、"nodes" 或 "both"
 
         Returns:
-            Dict with 'edges' and/or 'nodes' lists (wrapped by GraphToolsService into SearchResult)
+            包含 'edges' 和/或 'nodes' 列表的字典 (由 GraphToolsService 包装成 SearchResult)
         """
 
-    # --- Graph info ---
+    # --- 图信息 ---
 
     @abstractmethod
     def get_graph_info(self, graph_id: str) -> Dict[str, Any]:
-        """Get graph metadata (node count, edge count, entity types)."""
+        """获取图元数据 (节点数、边数、实体类型)。"""
 
     @abstractmethod
     def get_graph_data(self, graph_id: str) -> Dict[str, Any]:
         """
-        Get full graph data (enriched format for frontend).
+        获取完整图数据 (为前端提供的增强格式)。
 
-        Returns dict with:
+        返回包含以下内容的字典:
             graph_id, nodes, edges, node_count, edge_count
-        Edge dicts include derived fields: fact_type, source_node_name, target_node_name
+        边字典包含派生字段: fact_type, source_node_name, target_node_name
         """
