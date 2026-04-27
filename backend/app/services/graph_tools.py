@@ -1139,15 +1139,15 @@ class GraphToolsService:
         combined_prompt = "\n".join([f"{i+1}. {q}" for i, q in enumerate(result.interview_questions)])
 
         INTERVIEW_PROMPT_PREFIX = (
-            "You are being interviewed. Please combine your character profile, all past memories and actions, "
-            "and directly answer the following questions in plain text.\n"
-            "Response requirements:\n"
-            "1. Answer directly in natural language, do not call any tools\n"
-            "2. Do not return JSON format or tool call format\n"
-            "3. Do not use Markdown headings (e.g., #, ##, ###)\n"
-            "4. Answer the questions in order, with each answer starting with 'Question X:' (X is the question number)\n"
-            "5. Separate each answer with a blank line\n"
-            "6. Provide substantive answers, at least 2-3 sentences per question\n\n"
+            "你正在接受采访。请结合你的人设资料、所有过去的记忆和行动，"
+            "直接用纯文本回答以下问题。\n"
+            "回答要求：\n"
+            "1. 直接用自然语言回答，不要调用任何工具\n"
+            "2. 不要返回 JSON 格式或工具调用格式\n"
+            "3. 不要使用 Markdown 标题（如 #、##、###）\n"
+            "4. 按顺序回答问题，每条回答以'问题 X：'开头（X为问题编号）\n"
+            "5. 每条回答之间用空行分隔\n"
+            "6. 提供有实质内容的回答，每个问题至少 2-3 句话\n\n"
         )
         optimized_prompt = f"{INTERVIEW_PROMPT_PREFIX}{combined_prompt}"
 
