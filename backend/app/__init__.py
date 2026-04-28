@@ -85,6 +85,26 @@ def create_app(config_class=Config):
     def health():
         return {'status': 'ok', 'service': 'MiroFish-Offline Backend'}
 
+    # Serve frontend static files (for Docker production)
+    frontend_dist = os.path.join(os.path.dirname(__file__), '../../frontend/dist')
+    if os.path.isdir(frontend_dist):
+        @app.route('/')
+        def serve_index():
+            from flask import send_file
+            return send_file(os.path.join(frontend_dist, 'index.html'))
+
+        @app.route('/<path:filename>')
+        def serve_static(filename):
+            from flask import send_from_directory
+            # SPA fallback: if file not found, return index.html
+            file_path = os.path.join(frontend_dist, filename)
+            if os.path.isfile(file_path):
+                return send_from_directory(frontend_dist, filename)
+            return send_file(os.path.join(frontend_dist, 'index.html'))
+
+        if should_log_startup:
+            logger.info("Frontend static files enabled from: %s", frontend_dist)
+
     if should_log_startup:
         logger.info("MiroFish-Offline Backend startup complete")
 

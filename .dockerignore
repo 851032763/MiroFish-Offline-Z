@@ -4,6 +4,7 @@
 .cursor
 .DS_Store
 .env
+.idea
 
 node_modules
 frontend/node_modules
@@ -21,3 +22,5 @@ frontend/dist
 frontend/.vite
 
 backend/uploads
+backend/logs
+
