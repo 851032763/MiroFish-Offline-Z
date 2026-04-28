@@ -1,8 +1,9 @@
 import axios from 'axios'
 
 // 创建 axios 实例
+// 使用相对路径，通过当前域名访问 API
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '',
   timeout: 300000, // 5分钟超时（本体生成可能需要更长时间）
   headers: {
     'Content-Type': 'application/json'
