@@ -230,8 +230,8 @@ class EntityReader:
 
             filtered_entities.append(entity)
 
-        logger.info(f"过滤完成: 总节点数 {total_count}, 匹配数 {len(filtered_entities)}, ")
-                     f"entity types: {entity_types_found}")
+        logger.info(f"过滤完成: 总节点数 {total_count}, 匹配数 {len(filtered_entities)}, "
+        f"entity types: {entity_types_found}")
 
         return FilteredEntities(
             entities=filtered_entities,

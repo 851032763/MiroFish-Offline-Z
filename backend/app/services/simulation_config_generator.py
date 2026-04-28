@@ -397,7 +397,7 @@ class SimulationConfigGenerator:
         current_length = sum(len(p) for p in context_parts)
         remaining_length = self.MAX_CONTEXT_LENGTH - current_length - 500  # Reserve 500 characters
 
-            if remaining_length > 0 and document_text:
+        if remaining_length > 0 and document_text:
             doc_text = document_text[:remaining_length]
             if len(document_text) > remaining_length:
                 doc_text += "\n...（文档已截断）"

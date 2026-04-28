@@ -913,7 +913,7 @@ class SimulationRunner:
         
         # 读取 Twitter 操作文件（根据文件路径自动设置平台为 twitter）
         twitter_actions_log = os.path.join(sim_dir, "twitter", "actions.jsonl")
-            if not platform or platform == "twitter":
+        if not platform or platform == "twitter":
             actions.extend(cls._read_actions_from_file(
                 twitter_actions_log,
                 default_platform="twitter",  # 自动填充平台字段
@@ -924,7 +924,7 @@ class SimulationRunner:
         
         # 读取 Reddit 操作文件（根据文件路径自动设置平台为 reddit）
         reddit_actions_log = os.path.join(sim_dir, "reddit", "actions.jsonl")
-            if not platform or platform == "reddit":
+        if not platform or platform == "reddit":
             actions.extend(cls._read_actions_from_file(
                 reddit_actions_log,
                 default_platform="reddit",  # 自动填充平台字段

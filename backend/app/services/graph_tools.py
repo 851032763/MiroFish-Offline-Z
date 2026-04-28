@@ -1196,8 +1196,8 @@ class GraphToolsService:
                 twitter_response = self._clean_tool_call_response(twitter_response)
                 reddit_response = self._clean_tool_call_response(reddit_response)
 
-        twitter_text = twitter_response if twitter_response else "(此平台无响应)"
-        reddit_text = reddit_response if reddit_response else "(此平台无响应)"
+                twitter_text = twitter_response if twitter_response else "(此平台无响应)"
+                reddit_text = reddit_response if reddit_response else "(此平台无响应)"
                 response_text = f"[Twitter Platform Response]\n{twitter_text}\n\n[Reddit Platform Response]\n{reddit_text}"
 
                 import re
