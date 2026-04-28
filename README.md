@@ -4,9 +4,9 @@
 
 # MiroFish-Offline
 
-**Fully local fork of [MiroFish](https://github.com/666ghj/MiroFish) — no cloud APIs required. English UI.**
+**MiroFish 的完全本地化分支 — 无需云端 API，全中文界面。**
 
-*A multi-agent swarm intelligence engine that simulates public opinion, market sentiment, and social dynamics. Entirely on your hardware.*
+*多智能体群体智能引擎，模拟舆论、市场情绪和社交动态。完全在本地硬件运行。*
 
 [![GitHub Stars](https://img.shields.io/github/stars/nikmcfly/MiroFish-Offline?style=flat-square&color=DAA520)](https://github.com/nikmcfly/MiroFish-Offline/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/nikmcfly/MiroFish-Offline?style=flat-square)](https://github.com/nikmcfly/MiroFish-Offline/network)
@@ -15,61 +15,63 @@
 
 </div>
 
-## What is this?
+## 这是什么？
 
-MiroFish is a multi-agent simulation engine: upload any document (press release, policy draft, financial report), and it generates hundreds of AI agents with unique personalities that simulate the public reaction on social media. Posts, arguments, opinion shifts — hour by hour.
+MiroFish 是一个多智能体模拟引擎：上传任意文档（新闻稿、政策草案、财务报告），它会生成数百个具有独特个性的 AI 智能体，模拟社交媒体上的公众反应。帖子、争论、观点转变 — 实时追踪。
 
-The [original MiroFish](https://github.com/666ghj/MiroFish) was built for the Chinese market (Chinese UI, Zep Cloud for knowledge graphs, DashScope API). This fork makes it **fully local and fully English**:
+[原始 MiroFish](https://github.com/666ghj/MiroFish) 面向中国市场（中文界面、Zep Cloud 知识图谱、DashScope API）。本分支使其**完全本地化并适配中文**：
 
-| Original MiroFish | MiroFish-Offline |
+| 原始 MiroFish | MiroFish-Offline |
 |---|---|
-| Chinese UI | **English UI** (1,000+ strings translated) |
-| Zep Cloud (graph memory) | **Neo4j Community Edition 5.15** |
-| DashScope / OpenAI API (LLM) | **Ollama** (qwen2.5, llama3, etc.) |
-| Zep Cloud embeddings | **nomic-embed-text** via Ollama |
-| Cloud API keys required | **Zero cloud dependencies** |
+| 中文界面 | **中文界面** |
+| Zep Cloud（图谱记忆） | **Neo4j 社区版 5.15** |
+| DashScope / OpenAI API（LLM） | **Ollama**（qwen2.5、llama3 等） |
+| Zep Cloud 向量嵌入 | **Ollama nomic-embed-text** |
+| 需要云端 API Key | **零云端依赖** |
 
-## Workflow
+## 工作流程
 
-1. **Graph Build** — Extracts entities (people, companies, events) and relationships from your document. Builds a knowledge graph with individual and group memory via Neo4j.
-2. **Env Setup** — Generates hundreds of agent personas, each with unique personality, opinion bias, reaction speed, influence level, and memory of past events.
-3. **Simulation** — Agents interact on simulated social platforms: posting, replying, arguing, shifting opinions. The system tracks sentiment evolution, topic propagation, and influence dynamics in real time.
-4. **Report** — A ReportAgent analyzes the post-simulation environment, interviews a focus group of agents, searches the knowledge graph for evidence, and generates a structured analysis.
-5. **Interaction** — Chat with any agent from the simulated world. Ask them why they posted what they posted. Full memory and personality persists.
+1. **图谱构建** — 从文档中提取实体（人物、公司、事件）和关系。通过 Neo4j 构建知识图谱，包含个体和群体记忆。
+2. **环境设置** — 生成数百个智能体角色，每个都具有独特的个性、观点倾向、反应速度、影响力和对过去事件的记忆。
+3. **模拟** — 智能体在模拟社交平台上互动：发帖、回复、争论、转变观点。系统实时追踪情绪演变、话题传播和影响力动态。
+4. **报告** — ReportAgent 分析模拟后环境，访谈焦点小组智能体，在知识图谱中搜索证据，生成结构化分析。
+5. **互动** — 与模拟世界中的任意智能体聊天。询问他们为什么发表某些观点。完整的记忆和个性持续保留。
 
-## Screenshot
+## 截图
 
 <div align="center">
-<img src="./static/image/mirofish-offline-screenshot.jpg" alt="MiroFish Offline — English UI" width="100%"/>
+<img src="./static/image/mirofish-offline-screenshot.jpg" alt="MiroFish Offline — 中文界面" width="100%"/>
 </div>
 
-## Quick Start
+## 快速开始
 
-### Prerequisites
+### 前置要求
 
-- Docker & Docker Compose (recommended), **or**
-- Python 3.11+, Node.js 18+, Neo4j 5.15+, Ollama
+- Docker & Docker Compose（推荐），**或**
+- Python 3.11+、Node.js 18+、Neo4j 5.15+、Ollama
 
-### Option A: Docker (easiest)
+### 选项 A：Docker（推荐）
 
 ```bash
 git clone https://github.com/nikmcfly/MiroFish-Offline.git
 cd MiroFish-Offline
 cp .env.example .env
 
-# Start all services (Neo4j, Ollama, MiroFish)
-docker compose up -d
+# 编辑 .env 文件，配置你的 Neo4j 和 Ollama 地址
+# 例如：NEO4J_URI=bolt://192.168.2.52:7687
+#       LLM_BASE_URL=http://192.168.2.75:11434/v1
 
-# Pull the required models into Ollama
-docker exec mirofish-ollama ollama pull qwen2.5:32b
-docker exec mirofish-ollama ollama pull nomic-embed-text
+# 构建并启动 MiroFish（不包含 Neo4j 和 Ollama，需外部部署）
+docker compose up -d --build
 ```
 
-Open `http://localhost:3000` — that's it.
+**注意**：Neo4j 和 Ollama 需要在其他地方单独部署，并在 `.env` 中配置相应地址。
 
-### Option B: Manual
+启动后访问 `http://localhost:5001`
 
-**1. Start Neo4j**
+### 选项 B：手动部署
+
+**1. 启动 Neo4j**
 
 ```bash
 docker run -d --name neo4j \
@@ -78,26 +80,26 @@ docker run -d --name neo4j \
   neo4j:5.15-community
 ```
 
-**2. Start Ollama & pull models**
+**2. 启动 Ollama 并拉取模型**
 
 ```bash
 ollama serve &
-ollama pull qwen2.5:32b      # LLM (or qwen2.5:14b for less VRAM)
-ollama pull nomic-embed-text  # Embeddings (768d)
+ollama pull qwen2.5:32b      # LLM（或使用 qwen2.5:14b 减少显存占用）
+ollama pull nomic-embed-text  # 向量嵌入（768维）
 ```
 
-**3. Configure & run backend**
+**3. 配置并运行后端**
 
 ```bash
 cp .env.example .env
-# Edit .env if your Neo4j/Ollama are on non-default ports
+# 如果你的 Neo4j/Ollama 不是默认端口，请编辑 .env
 
 cd backend
 pip install -r requirements.txt
 python run.py
 ```
 
-**4. Run frontend**
+**4. 运行前端**
 
 ```bash
 cd frontend
@@ -105,14 +107,14 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+访问 `http://localhost:3000`（开发模式）或 `http://localhost:5001`（生产模式）
 
-## Configuration
+## 配置
 
-All settings are in `.env` (copy from `.env.example`):
+所有设置在 `.env` 文件中（从 `.env.example` 复制）：
 
 ```bash
-# LLM — points to local Ollama (OpenAI-compatible API)
+# LLM — 指向本地 Ollama（OpenAI 兼容格式）
 LLM_API_KEY=ollama
 LLM_BASE_URL=http://localhost:11434/v1
 LLM_MODEL_NAME=qwen2.5:32b
@@ -122,16 +124,16 @@ NEO4J_URI=bolt://localhost:7687
 NEO4J_USER=neo4j
 NEO4J_PASSWORD=mirofish
 
-# Embeddings
+# 向量嵌入
 EMBEDDING_MODEL=nomic-embed-text
 EMBEDDING_BASE_URL=http://localhost:11434
 ```
 
-Works with any OpenAI-compatible API — swap Ollama for Claude, GPT, or any other provider by changing `LLM_BASE_URL` and `LLM_API_KEY`.
+兼容任何 OpenAI 兼容 API — 通过修改 `LLM_BASE_URL` 和 `LLM_API_KEY` 可切换到 Claude、GPT 或其他提供商。
 
-## Architecture
+## 架构
 
-This fork introduces a clean abstraction layer between the application and the graph database:
+本分支在应用和图数据库之间引入了清晰的抽象层：
 
 ```
 ┌─────────────────────────────────────────┐
@@ -153,7 +155,7 @@ This fork introduces a clean abstraction layer between the application and the g
 │    │  ┌───────────────┐ │                │
 │    │  │ EmbeddingService│ ← Ollama       │
 │    │  │ NERExtractor   │ ← Ollama LLM   │
-│    │  │ SearchService  │ ← Hybrid search │
+│    │  │ SearchService  │ ← 混合搜索      │
 │    │  └───────────────┘ │                │
 │    └───────────────────┘                │
 └─────────────────────────────────────────┘
@@ -164,42 +166,46 @@ This fork introduces a clean abstraction layer between the application and the g
         └─────────────┘
 ```
 
-**Key design decisions:**
+**关键设计决策：**
 
-- `GraphStorage` is an abstract interface — swap Neo4j for any other graph DB by implementing one class
-- Dependency injection via Flask `app.extensions` — no global singletons
-- Hybrid search: 0.7 × vector similarity + 0.3 × BM25 keyword search
-- Synchronous NER/RE extraction via local LLM (replaces Zep's async episodes)
-- All original dataclasses and LLM tools (InsightForge, Panorama, Agent Interviews) preserved
+- `GraphStorage` 是抽象接口 — 通过实现一个类即可将 Neo4j 替换为其他图数据库
+- 通过 Flask `app.extensions` 依赖注入 — 无全局单例
+- 混合搜索：0.7 × 向量相似度 + 0.3 × BM25 关键词搜索
+- 通过本地 LLM 实现同步 NER/RE 提取（替代 Zep 的异步事件）
+- 保留所有原始数据类和 LLM 工具（InsightForge、Panorama、智能体访谈）
 
-## Hardware Requirements
+## 硬件要求
 
-| Component | Minimum | Recommended |
+| 组件 | 最低配置 | 推荐配置 |
 |---|---|---|
-| RAM | 16 GB | 32 GB |
-| VRAM (GPU) | 10 GB (14b model) | 24 GB (32b model) |
-| Disk | 20 GB | 50 GB |
-| CPU | 4 cores | 8+ cores |
+| 内存 | 16 GB | 32 GB |
+| 显存（GPU） | 10 GB（14b 模型） | 24 GB（32b 模型） |
+| 磁盘 | 20 GB | 50 GB |
+| CPU | 4 核 | 8+ 核 |
 
-CPU-only mode works but is significantly slower for LLM inference. For lighter setups, use `qwen2.5:14b` or `qwen2.5:7b`.
+纯 CPU 模式可用，但 LLM 推理会显著变慢。对于更轻量的配置，可使用 `qwen2.5:14b` 或 `qwen2.5:7b`。
 
-## Use Cases
+## 使用场景
 
-- **PR crisis testing** — simulate the public reaction to a press release before publishing
-- **Trading signal generation** — feed financial news and observe simulated market sentiment
-- **Policy impact analysis** — test draft regulations against simulated public response
-- **Creative experiments** — someone fed it a classical Chinese novel with a lost ending; the agents wrote a narratively consistent conclusion
+- **PR 危机测试** — 在发布前模拟新闻稿的公众反应
+- **交易信号生成** — 导入财经新闻，观察模拟市场情绪
+- **政策影响分析** — 针对模拟公众反应测试法规草案
+- **创意实验** — 有人用它输入了一部古典中文小说（结局丢失）；智能体们写出了一个叙事一致性的结局
 
-## License
+## 许可证
 
-AGPL-3.0 — same as the original MiroFish project. See [LICENSE](./LICENSE).
+AGPL-3.0 — 与原始 MiroFish 项目相同。参见 [LICENSE](./LICENSE)。
 
-## Credits & Attribution
+## 致谢与归属
 
-This is a modified fork of [MiroFish](https://github.com/666ghj/MiroFish) by [666ghj](https://github.com/666ghj), originally supported by [Shanda Group](https://www.shanda.com/). The simulation engine is powered by [OASIS](https://github.com/camel-ai/oasis) from the CAMEL-AI team.
+这是 [MiroFish](https://github.com/666ghj/MiroFish) 的改进分支，由 [666ghj](https://github.com/666ghj) 创建，最初由 [盛大集团](https://www.shanda.com/) 支持。模拟引擎由 CAMEL-AI 团队的 [OASIS](https://github.com/camel-ai/oasis) 驱动。
 
-**Modifications in this fork:**
-- Backend migrated from Zep Cloud to local Neo4j CE 5.15 + Ollama
-- Entire frontend translated from Chinese to English (20 files, 1,000+ strings)
-- All Zep references replaced with Neo4j across the UI
-- Rebranded to MiroFish Offline
+**本分支的改进：**
+
+- 后端从 Zep Cloud 迁移到本地 Neo4j CE 5.15 + Ollama
+- 整个前端翻译为中文（20 个文件，1000+ 字符串）
+- 所有 Zep 引用在 UI 中替换为 Neo4j
+- 重命名为 MiroFish Offline
+- 支持外部部署 Neo4j 和 Ollama
+- 优化 Docker 镜像大小（多阶段构建）
+- 简化部署：前端由后端直接服务
