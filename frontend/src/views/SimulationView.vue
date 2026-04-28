@@ -1,6 +1,6 @@
 <template>
   <div class="main-view">
-    <!-- Header -->
+    <!-- 头部 -->
     <header class="app-header">
       <div class="header-left">
         <div class="brand" @click="router.push('/')">MIROFISH OFFLINE</div>
@@ -33,9 +33,9 @@
       </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- 主内容区域 -->
     <main class="content-area">
-      <!-- Left Panel: Graph -->
+      <!-- 左侧面板：图谱 -->
       <div class="panel-wrapper left" :style="leftPanelStyle">
         <GraphPanel 
           :graphData="graphData"
@@ -46,7 +46,7 @@
         />
       </div>
 
-      <!-- Right Panel: Step2 Env Setup -->
+      <!-- 右侧面板：步骤2环境配置 -->
       <div class="panel-wrapper right" :style="rightPanelStyle">
         <Step2EnvSetup
           :simulationId="currentSimulationId"
@@ -74,23 +74,23 @@ import { getSimulation, stopSimulation, getEnvStatus, closeSimulationEnv } from 
 const route = useRoute()
 const router = useRouter()
 
-// Props
+// 属性
 const props = defineProps({
   simulationId: String
 })
 
-// Layout State
+// 布局状态
 const viewMode = ref('split')
 
-// Data State
+// 数据状态
 const currentSimulationId = ref(route.params.simulationId)
 const projectData = ref(null)
 const graphData = ref(null)
 const graphLoading = ref(false)
 const systemLogs = ref([])
-const currentStatus = ref('processing') // processing | completed | error
+const currentStatus = ref('processing') // 处理中 | 已完成 | 错误
 
-// --- Computed Layout Styles ---
+// --- 计算布局样式 ---
 const leftPanelStyle = computed(() => {
   if (viewMode.value === 'graph') return { width: '100%', opacity: 1, transform: 'translateX(0)' }
   if (viewMode.value === 'workbench') return { width: '0%', opacity: 0, transform: 'translateX(-20px)' }
@@ -103,18 +103,18 @@ const rightPanelStyle = computed(() => {
   return { width: '50%', opacity: 1, transform: 'translateX(0)' }
 })
 
-// --- Status Computed ---
+// --- 状态计算属性 ---
 const statusClass = computed(() => {
   return currentStatus.value
 })
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
+  if (currentStatus.value === 'error') return '错误'
   if (currentStatus.value === 'completed') return '就绪'
-  return 'Preparing'
+  return '准备中'
 })
 
-// --- Helpers ---
+// --- 辅助方法 ---
 const addLog = (msg) => {
   const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '.' + new Date().getMilliseconds().toString().padStart(3, '0')
   systemLogs.value.push({ time, msg })
@@ -127,7 +127,7 @@ const updateStatus = (status) => {
   currentStatus.value = status
 }
 
-// --- Layout Methods ---
+// --- 布局方法 ---
 const toggleMaximize = (target) => {
   if (viewMode.value === target) {
     viewMode.value = 'split'
@@ -137,7 +137,7 @@ const toggleMaximize = (target) => {
 }
 
 const handleGoBack = () => {
-  // Return to process page
+  // 返回处理页面
   if (projectData.value?.project_id) {
     router.push({ name: 'Process', params: { projectId: projectData.value.project_id } })
   } else {
@@ -148,65 +148,65 @@ const handleGoBack = () => {
 const handleNextStep = (params = {}) => {
   addLog('正在进入步骤3: 模拟')
 
-  // Log simulation rounds configuration
+  // 记录模拟轮次配置
   if (params.maxRounds) {
     addLog(`自定义模拟轮次: ${params.maxRounds}`)
   } else {
     addLog('使用自动配置的模拟轮数')
   }
 
-  // Build route parameters
+  // 构建路由参数
   const routeParams = {
     name: 'SimulationRun',
     params: { simulationId: currentSimulationId.value }
   }
 
-  // If custom rounds exist, pass via query parameters
+  // 如果存在自定义轮次，通过查询参数传递
   if (params.maxRounds) {
     routeParams.query = { maxRounds: params.maxRounds }
   }
 
-  // Navigate to Step 3 page
+  // 导航到步骤3页面
   router.push(routeParams)
 }
 
-// --- Data Logic ---
+// --- 数据逻辑 ---
 
 /**
- * Check and stop running simulation
- * When user returns from Step 3 to Step 2, assume user wants to exit simulation
+ * 检查并停止正在运行的模拟
+ * 当用户从步骤3返回步骤2时，假设用户想要退出模拟
  */
 const checkAndStopRunningSimulation = async () => {
   if (!currentSimulationId.value) return
 
   try {
-    // First check if simulation environment is alive
+    // 首先检查模拟环境是否存活
     const envStatusRes = await getEnvStatus({ simulation_id: currentSimulationId.value })
 
     if (envStatusRes.success && envStatusRes.data?.env_alive) {
       addLog('模拟环境正在运行，正在关闭...')
 
-      // Try graceful shutdown
+      // 尝试优雅关闭
       try {
         const closeRes = await closeSimulationEnv({
           simulation_id: currentSimulationId.value,
-          timeout: 10  // 10 second timeout
+          timeout: 10  // 10秒超时
         })
 
         if (closeRes.success) {
           addLog('✓ 模拟环境已关闭')
         } else {
-          addLog(`关闭模拟环境失败: ${closeRes.error || '未知错误'}`)
-          // If graceful shutdown fails, try force stop
+        addLog(`关闭模拟环境失败: ${closeRes.error || '未知错误'}`)
+        // 如果优雅关闭失败，尝试强制停止
           await forceStopSimulation()
         }
       } catch (closeErr) {
-        addLog(`Close env exception: ${closeErr.message}`)
-        // If graceful shutdown fails, try force stop
+        addLog(`关闭环境异常: ${closeErr.message}`)
+        // 如果优雅关闭失败，尝试强制停止
         await forceStopSimulation()
       }
     } else {
-      // Environment not running, but process may still exist, check simulation status
+      // 环境未运行，但进程可能仍存在，检查模拟状态
       const simRes = await getSimulation(currentSimulationId.value)
       if (simRes.success && simRes.data?.status === 'running') {
         addLog('模拟正在运行，正在停止...')
@@ -214,13 +214,13 @@ const checkAndStopRunningSimulation = async () => {
       }
     }
   } catch (err) {
-    // Failed to check environment status, does not affect subsequent flow
-    console.warn('Failed to check simulation status:', err)
+    // 检查环境状态失败，不影响后续流程
+    console.warn('检查模拟状态失败:', err)
   }
 }
 
 /**
- * Force stop simulation
+ * 强制停止模拟
  */
 const forceStopSimulation = async () => {
   try {
@@ -231,7 +231,7 @@ const forceStopSimulation = async () => {
       addLog(`强制停止模拟失败: ${stopRes.error || '未知错误'}`)
     }
   } catch (err) {
-    addLog(`Force stop exception: ${err.message}`)
+    addLog(`强制停止异常: ${err.message}`)
   }
 }
 
@@ -239,19 +239,19 @@ const loadSimulationData = async () => {
   try {
     addLog(`正在加载模拟数据: ${currentSimulationId.value}`)
 
-    // Get simulation info
+    // 获取模拟信息
     const simRes = await getSimulation(currentSimulationId.value)
     if (simRes.success && simRes.data) {
       const simData = simRes.data
 
-      // Get project info
+      // 获取项目信息
       if (simData.project_id) {
         const projRes = await getProject(simData.project_id)
         if (projRes.success && projRes.data) {
           projectData.value = projRes.data
-          addLog(`Project loaded: ${projRes.data.project_id}`)
+          addLog(`项目已加载: ${projRes.data.project_id}`)
 
-          // Get graph data
+          // 获取图数据
           if (projRes.data.graph_id) {
             await loadGraph(projRes.data.graph_id)
           }
@@ -289,10 +289,10 @@ const refreshGraph = () => {
 onMounted(async () => {
   addLog('SimulationView 已初始化')
 
-  // Check and stop running simulation (when user returns from Step 3)
+  // 检查并停止正在运行的模拟（当用户从步骤3返回时）
   await checkAndStopRunningSimulation()
 
-  // Load simulation data
+  // 加载模拟数据
   loadSimulationData()
 })
 </script>
@@ -307,7 +307,7 @@ onMounted(async () => {
   font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
 }
 
-/* Header */
+/* 头部 */
 .app-header {
   height: 60px;
   border-bottom: 1px solid #EAEAEA;
@@ -412,7 +412,7 @@ onMounted(async () => {
 
 @keyframes pulse { 50% { opacity: 0.5; } }
 
-/* Content */
+/* 内容 */
 .content-area {
   flex: 1;
   display: flex;

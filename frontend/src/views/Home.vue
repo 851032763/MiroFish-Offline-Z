@@ -1,17 +1,17 @@
 <template>
   <div class="home-container">
-    <!-- Top Navigation Bar -->
+    <!-- 顶部导航栏 -->
     <nav class="navbar" :style="s.navbar">
       <div class="nav-brand" :style="s.navBrand">MIROFISH OFFLINE</div>
       <div class="nav-links" :style="s.navLinks">
         <a href="https://github.com/nikmcfly/MiroFish-Offline" target="_blank" class="github-link" :style="s.githubLink">
-          Visit our Github <span>↗</span>
+          访问我们的 GitHub <span>↗</span>
         </a>
       </div>
     </nav>
 
     <div class="main-content" :style="s.mainContent">
-      <!-- Hero Section -->
+      <!-- 英雄区域 -->
       <section class="hero-section" :style="s.heroSection">
         <div class="hero-left" :style="s.heroLeft">
           <div class="tag-row" :style="s.tagRow">
@@ -26,10 +26,10 @@
 
           <div class="hero-desc" :style="s.heroDesc">
             <p :style="s.heroDescP">
-              From a single document, <span :style="s.highlightBold">MiroFish Offline</span> extracts reality seeds and builds a parallel world of <span :style="s.highlightOrange">autonomous AI agents</span> — running entirely on your machine. Inject variables, observe emergent behavior, and find <span :style="s.highlightCode">"local optima"</span> in complex social dynamics.
+              <span :style="s.highlightBold">MiroFish Offline</span> 从单个文档中提取现实种子，构建由 <span :style="s.highlightOrange">自主 AI 智能体</span> 组成的平行世界——完全运行在您的本地机器上。注入变量，观察涌现行为，在复杂社会动态中发现 <span :style="s.highlightCode">"局部最优解"</span>。
             </p>
             <p class="slogan-text" :style="s.sloganText">
-              Your data never leaves your machine. The future is simulated locally<span :style="s.blinkingCursor">_</span>
+              您的数据永不离开您的机器。未来在此本地模拟<span :style="s.blinkingCursor">_</span>
             </p>
           </div>
 
@@ -44,9 +44,9 @@
         </div>
       </section>
 
-      <!-- Dashboard: Two-Column Layout -->
+      <!-- 仪表盘：双栏布局 -->
       <section class="dashboard-section" :style="s.dashboardSection">
-        <!-- Left Column: Status & Steps -->
+        <!-- 左栏：状态和步骤 -->
         <div class="left-panel" :style="s.leftPanel">
           <div class="panel-header" :style="s.panelHeader">
             <span :style="s.statusDot">■</span> 系统状态
@@ -84,7 +84,7 @@
           </div>
         </div>
 
-        <!-- Right Column: Interactive Console -->
+        <!-- 右栏：交互控制台 -->
         <div class="right-panel" :style="s.rightPanel">
           <div class="console-box" :style="s.consoleBox">
             <div :style="s.consoleSection">
@@ -102,8 +102,8 @@
                 <input ref="fileInput" type="file" multiple accept=".pdf,.md,.txt" @change="handleFileSelect" style="display: none" :disabled="loading" />
                 <div v-if="files.length === 0" :style="s.uploadPlaceholder">
                   <div :style="s.uploadIcon">↑</div>
-                  <div :style="s.uploadTitle">Drag & drop files here</div>
-                  <div :style="s.uploadHint">or click to browse</div>
+                  <div :style="s.uploadTitle">将文件拖拽到此处</div>
+                  <div :style="s.uploadHint">或点击选择文件</div>
                 </div>
                 <div v-else :style="s.fileList">
                   <div v-for="(file, index) in files" :key="index" :style="s.fileItem">
@@ -123,7 +123,7 @@
               </div>
               <div :style="s.inputWrapper">
                 <textarea v-model="formData.simulationRequirement" :style="s.codeInput" placeholder="// 用自然语言输入模拟或预测需求" rows="6" :disabled="loading"></textarea>
-                <div :style="s.modelBadge">Engine: Ollama + Neo4j (local)</div>
+                <div :style="s.modelBadge">引擎：Ollama + Neo4j（本地）</div>
               </div>
             </div>
 
@@ -263,4 +263,4 @@ const startSimulation = () => {
 }
 </script>
 
-<!-- Styles loaded from Home.css via import -->
+<!-- 样式通过导入从 Home.css 加载 -->

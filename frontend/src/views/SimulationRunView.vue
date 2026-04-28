@@ -1,6 +1,6 @@
 <template>
   <div class="main-view">
-    <!-- Header -->
+    <!-- 头部 -->
     <header class="app-header">
       <div class="header-left">
         <div class="brand" @click="router.push('/')">MIROFISH OFFLINE</div>
@@ -33,9 +33,9 @@
       </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- 主内容区域 -->
     <main class="content-area">
-      <!-- Left Panel: Graph -->
+      <!-- 左侧面板：图谱 -->
       <div class="panel-wrapper left" :style="leftPanelStyle">
         <GraphPanel 
           :graphData="graphData"
@@ -47,7 +47,7 @@
         />
       </div>
 
-      <!-- Right Panel: Step3 Simulation -->
+      <!-- 右侧面板：步骤3模拟 -->
       <div class="panel-wrapper right" :style="rightPanelStyle">
         <Step3Simulation
           :simulationId="currentSimulationId"
@@ -77,26 +77,26 @@ import { getSimulation, getSimulationConfig, stopSimulation, closeSimulationEnv,
 const route = useRoute()
 const router = useRouter()
 
-// Props
+// 属性
 const props = defineProps({
   simulationId: String
 })
 
-// Layout State
+// 布局状态
 const viewMode = ref('split')
 
-// Data State
+// 数据状态
 const currentSimulationId = ref(route.params.simulationId)
-// Get maxRounds from query param during init to ensure child components get value immediately
+// 初始化时从查询参数获取maxRounds，以确保子组件能立即获取值
 const maxRounds = ref(route.query.maxRounds ? parseInt(route.query.maxRounds) : null)
-const minutesPerRound = ref(30) // Default 30 minutes per round
+const minutesPerRound = ref(30) // 默认每轮30分钟
 const projectData = ref(null)
 const graphData = ref(null)
 const graphLoading = ref(false)
 const systemLogs = ref([])
-const currentStatus = ref('processing') // processing | completed | error
+const currentStatus = ref('processing') // 处理中 | 已完成 | 错误
 
-// --- Computed Layout Styles ---
+// --- 计算布局样式 ---
 const leftPanelStyle = computed(() => {
   if (viewMode.value === 'graph') return { width: '100%', opacity: 1, transform: 'translateX(0)' }
   if (viewMode.value === 'workbench') return { width: '0%', opacity: 0, transform: 'translateX(-20px)' }
@@ -109,20 +109,20 @@ const rightPanelStyle = computed(() => {
   return { width: '50%', opacity: 1, transform: 'translateX(0)' }
 })
 
-// --- Status Computed ---
+// --- 状态计算属性 ---
 const statusClass = computed(() => {
   return currentStatus.value
 })
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
+  if (currentStatus.value === 'error') return '错误'
   if (currentStatus.value === 'completed') return '已完成'
   return '运行中'
 })
 
 const isSimulating = computed(() => currentStatus.value === 'processing')
 
-// --- Helpers ---
+// --- 辅助方法 ---
 const addLog = (msg) => {
   const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '.' + new Date().getMilliseconds().toString().padStart(3, '0')
   systemLogs.value.push({ time, msg })
@@ -135,7 +135,7 @@ const updateStatus = (status) => {
   currentStatus.value = status
 }
 
-// --- Layout Methods ---
+// --- 布局方法 ---
 const toggleMaximize = (target) => {
   if (viewMode.value === target) {
     viewMode.value = 'split'
@@ -145,14 +145,14 @@ const toggleMaximize = (target) => {
 }
 
 const handleGoBack = async () => {
-  // Close running simulation before returning to Step 2
+  // 返回步骤2前关闭正在运行的模拟
   addLog('正在返回步骤2，关闭模拟...')
 
-  // Stop polling
+  // 停止轮询
   stopGraphRefresh()
 
   try {
-    // First try gracefully closing the simulation environment
+    // 首先尝试优雅关闭模拟环境
     const envStatusRes = await getEnvStatus({ simulation_id: currentSimulationId.value })
     
     if (envStatusRes.success && envStatusRes.data?.env_alive) {
@@ -173,7 +173,7 @@ const handleGoBack = async () => {
         }
       }
     } else {
-      // Environment not running, check if process needs to be stopped
+      // 环境未运行，检查进程是否需要停止
       if (isSimulating.value) {
         addLog('正在停止模拟进程...')
         try {
@@ -188,45 +188,45 @@ const handleGoBack = async () => {
     addLog(`检查模拟状态失败: ${err.message}`)
   }
 
-  // Return to Step 2 (Env Setup)
+  // 返回步骤2（环境配置）
   router.push({ name: 'Simulation', params: { simulationId: currentSimulationId.value } })
 }
 
 const handleNextStep = () => {
-  // Step3Simulation component will handle report generation and routing
-  // This method is for backup only
+  // Step3Simulation组件将处理报告生成和路由
+  // 此方法仅作为备份
   addLog('正在进入步骤4: 报告')
 }
 
-// --- Data Logic ---
+// --- 数据逻辑 ---
 const loadSimulationData = async () => {
   try {
     addLog(`正在加载模拟数据: ${currentSimulationId.value}`)
 
-    // Get simulation information
+    // 获取模拟信息
     const simRes = await getSimulation(currentSimulationId.value)
     if (simRes.success && simRes.data) {
       const simData = simRes.data
       
-      // Get simulation config to get minutes_per_round
+      // 获取模拟配置以获取每轮分钟数
       try {
         const configRes = await getSimulationConfig(currentSimulationId.value)
         if (configRes.success && configRes.data?.time_config?.minutes_per_round) {
           minutesPerRound.value = configRes.data.time_config.minutes_per_round
-          addLog(`Time config: ${minutesPerRound.value} min/round`)
+          addLog(`时间配置: ${minutesPerRound.value} 分钟/轮`)
         }
       } catch (configErr) {
         addLog(`获取时间配置失败，使用默认值: ${minutesPerRound.value} 分钟/轮`)
       }
 
-      // Get project information
+      // 获取项目信息
       if (simData.project_id) {
         const projRes = await getProject(simData.project_id)
         if (projRes.success && projRes.data) {
           projectData.value = projRes.data
-          addLog(`Project loaded: ${projRes.data.project_id}`)
+          addLog(`项目已加载: ${projRes.data.project_id}`)
 
-          // Get graph data
+          // 获取图数据
           if (projRes.data.graph_id) {
             await loadGraph(projRes.data.graph_id)
           }
@@ -241,8 +241,8 @@ const loadSimulationData = async () => {
 }
 
 const loadGraph = async (graphId) => {
-  // Auto-refresh during simulation doesn't show fullscreen loading to avoid flickering
-  // Show loading for manual refresh or initial load
+  // 模拟期间自动刷新不显示全屏加载以避免闪烁
+  // 手动刷新或初始加载时显示加载状态
   if (!isSimulating.value) {
     graphLoading.value = true
   }
@@ -268,13 +268,13 @@ const refreshGraph = () => {
   }
 }
 
-// --- Auto Refresh Logic ---
+// --- 自动刷新逻辑 ---
 let graphRefreshTimer = null
 
 const startGraphRefresh = () => {
   if (graphRefreshTimer) return
   addLog('图自动刷新已启动 (30秒)')
-  // Refresh immediately, then every 30 seconds
+  // 立即刷新，然后每30秒刷新一次
   graphRefreshTimer = setInterval(refreshGraph, 30000)
 }
 
@@ -297,9 +297,9 @@ watch(isSimulating, (newValue) => {
 onMounted(() => {
   addLog('SimulationRunView 已初始化')
 
-  // Log maxRounds config (value already retrieved from query param during init)
+  // 记录maxRounds配置（初始化时已从查询参数获取值）
   if (maxRounds.value) {
-    addLog(`Custom simulation rounds: ${maxRounds.value}`)
+    addLog(`自定义模拟轮次: ${maxRounds.value}`)
   }
   
   loadSimulationData()
@@ -320,7 +320,7 @@ onUnmounted(() => {
   font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
 }
 
-/* Header */
+/* 头部 */
 .app-header {
   height: 60px;
   border-bottom: 1px solid #EAEAEA;
@@ -425,7 +425,7 @@ onUnmounted(() => {
 
 @keyframes pulse { 50% { opacity: 0.5; } }
 
-/* Content */
+/* 内容 */
 .content-area {
   flex: 1;
   display: flex;

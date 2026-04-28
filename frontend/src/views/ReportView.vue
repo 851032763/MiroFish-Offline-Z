@@ -1,6 +1,6 @@
 <template>
   <div class="main-view">
-    <!-- Header -->
+    <!-- 头部 -->
     <header class="app-header">
       <div class="header-left">
         <div class="brand" @click="router.push('/')">MIROFISH OFFLINE</div>
@@ -33,9 +33,9 @@
       </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- 主内容区域 -->
     <main class="content-area">
-      <!-- Left Panel: Graph -->
+      <!-- 左侧面板：图谱 -->
       <div class="panel-wrapper left" :style="leftPanelStyle">
         <GraphPanel 
           :graphData="graphData"
@@ -47,7 +47,7 @@
         />
       </div>
 
-      <!-- Right Panel: Step4 Report -->
+      <!-- 右侧面板：步骤4报告 -->
       <div class="panel-wrapper right" :style="rightPanelStyle">
         <Step4Report
           :reportId="currentReportId"
@@ -73,24 +73,24 @@ import { getReport } from '../api/report'
 const route = useRoute()
 const router = useRouter()
 
-// Props
+// 属性
 const props = defineProps({
   reportId: String
 })
 
-// Layout State - Default to workbench view
+// 布局状态 - 默认为工作台视图
 const viewMode = ref('workbench')
 
-// Data State
+// 数据状态
 const currentReportId = ref(route.params.reportId)
 const simulationId = ref(null)
 const projectData = ref(null)
 const graphData = ref(null)
 const graphLoading = ref(false)
 const systemLogs = ref([])
-const currentStatus = ref('processing') // processing | completed | error
+const currentStatus = ref('processing') // 处理中 | 已完成 | 错误
 
-// --- Computed Layout Styles ---
+// --- 计算布局样式 ---
 const leftPanelStyle = computed(() => {
   if (viewMode.value === 'graph') return { width: '100%', opacity: 1, transform: 'translateX(0)' }
   if (viewMode.value === 'workbench') return { width: '0%', opacity: 0, transform: 'translateX(-20px)' }
@@ -103,18 +103,18 @@ const rightPanelStyle = computed(() => {
   return { width: '50%', opacity: 1, transform: 'translateX(0)' }
 })
 
-// --- Status Computed ---
+// --- 状态计算属性 ---
 const statusClass = computed(() => {
   return currentStatus.value
 })
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
+  if (currentStatus.value === 'error') return '错误'
   if (currentStatus.value === 'completed') return '已完成'
-  return 'Generating'
+  return '生成中'
 })
 
-// --- Helpers ---
+// --- 辅助方法 ---
 const addLog = (msg) => {
   const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '.' + new Date().getMilliseconds().toString().padStart(3, '0')
   systemLogs.value.push({ time, msg })
@@ -127,7 +127,7 @@ const updateStatus = (status) => {
   currentStatus.value = status
 }
 
-// --- Layout Methods ---
+// --- 布局方法 ---
 const toggleMaximize = (target) => {
   if (viewMode.value === target) {
     viewMode.value = 'split'
@@ -136,31 +136,31 @@ const toggleMaximize = (target) => {
   }
 }
 
-// --- Data Logic ---
+// --- 数据逻辑 ---
 const loadReportData = async () => {
   try {
     addLog(`正在加载报告数据: ${currentReportId.value}`)
     
-    // Get report info to retrieve simulation_id
+    // 获取报告信息以获取模拟ID
     const reportRes = await getReport(currentReportId.value)
     if (reportRes.success && reportRes.data) {
       const reportData = reportRes.data
       simulationId.value = reportData.simulation_id
       
       if (simulationId.value) {
-        // Get simulation info
+        // 获取模拟信息
         const simRes = await getSimulation(simulationId.value)
         if (simRes.success && simRes.data) {
           const simData = simRes.data
           
-          // Get project info
+          // 获取项目信息
           if (simData.project_id) {
             const projRes = await getProject(simData.project_id)
             if (projRes.success && projRes.data) {
               projectData.value = projRes.data
-              addLog(`Project loaded: ${projRes.data.project_id}`)
+              addLog(`项目已加载: ${projRes.data.project_id}`)
               
-              // Get graph data
+              // 获取图数据
               if (projRes.data.graph_id) {
                 await loadGraph(projRes.data.graph_id)
               }
@@ -198,7 +198,7 @@ const refreshGraph = () => {
   }
 }
 
-// Watch route params
+// 监听路由参数变化
 watch(() => route.params.reportId, (newId) => {
   if (newId && newId !== currentReportId.value) {
     currentReportId.value = newId
@@ -222,7 +222,7 @@ onMounted(() => {
   font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
 }
 
-/* Header */
+/* 头部 */
 .app-header {
   height: 60px;
   border-bottom: 1px solid #EAEAEA;
@@ -327,7 +327,7 @@ onMounted(() => {
 
 @keyframes pulse { 50% { opacity: 0.5; } }
 
-/* Content */
+/* 内容 */
 .content-area {
   flex: 1;
   display: flex;

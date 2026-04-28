@@ -1,4 +1,4 @@
-/* Home.css — extracted from Home.vue to bypass Vite SFC style bug */
+/* Home.css — 从 Home.vue 提取以绕过 Vite SFC 样式问题 */
 
 .home-container {
   min-height: 100vh;
@@ -7,7 +7,7 @@
   color: #000000;
 }
 
-/* Top Navigation */
+/* 顶部导航栏 */
 .navbar {
   height: 60px;
   background: #000000;
@@ -50,14 +50,14 @@
   font-family: sans-serif;
 }
 
-/* Main Content */
+/* 主内容区 */
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
   padding: 60px 40px;
 }
 
-/* Hero Section */
+/* 英雄区域 */
 .hero-section {
   display: flex;
   justify-content: space-between;
@@ -210,7 +210,7 @@
   border-color: #FF4500;
 }
 
-/* Dashboard Two-Column Layout */
+/* 仪表盘双栏布局 */
 .dashboard-section {
   display: flex;
   gap: 60px;
@@ -225,7 +225,7 @@
   flex-direction: column;
 }
 
-/* Left Panel */
+/* 左侧面板 */
 .left-panel {
   flex: 0.8;
 }
@@ -281,7 +281,7 @@
   color: #999;
 }
 
-/* Workflow Steps */
+/* 工作流程步骤 */
 .steps-container {
   border: 1px solid #E5E5E5;
   padding: 30px;
@@ -337,7 +337,7 @@
   color: #666666;
 }
 
-/* Right Interactive Console */
+/* 右侧交互控制台 */
 .right-panel {
   flex: 1.2;
 }
@@ -512,7 +512,7 @@
   overflow: hidden;
 }
 
-/* Clickable state (not disabled) */
+/* 可点击状态（非禁用） */
 .start-engine-btn:not(:disabled) {
   background: #000000;
   border: 1px solid #000000;
@@ -537,14 +537,14 @@
   border: 1px solid #E5E5E5;
 }
 
-/* Pulse animation for border */
+/* 边框脉冲动画 */
 @keyframes pulse-border {
   0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); }
   70% { box-shadow: 0 0 0 6px rgba(0, 0, 0, 0); }
   100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
 }
 
-/* Responsive */
+/* 响应式布局 */
 @media (max-width: 1024px) {
   .dashboard-section {
     flex-direction: column;

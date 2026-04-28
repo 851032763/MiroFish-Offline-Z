@@ -1,6 +1,6 @@
 <template>
   <div class="main-view">
-    <!-- Header -->
+    <!-- 头部 -->
     <header class="app-header">
       <div class="header-left">
         <div class="brand" @click="router.push('/')">MIROFISH OFFLINE</div>
@@ -15,14 +15,14 @@
             :class="{ active: viewMode === mode }"
             @click="viewMode = mode"
           >
-            {{ { graph: 'Graph', split: 'Split', workbench: 'Workbench' }[mode] }}
+            {{ { graph: '图谱', split: '分屏', workbench: '工作台' }[mode] }}
           </button>
         </div>
       </div>
 
       <div class="header-right">
         <div class="workflow-step">
-          <span class="step-num">Step {{ currentStep }}/5</span>
+          <span class="step-num">步骤 {{ currentStep }}/5</span>
           <span class="step-name">{{ stepNames[currentStep - 1] }}</span>
         </div>
         <div class="step-divider"></div>
@@ -33,9 +33,9 @@
       </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- 主内容区域 -->
     <main class="content-area">
-      <!-- Left Panel: Graph -->
+      <!-- 左侧面板：图谱 -->
       <div class="panel-wrapper left" :style="leftPanelStyle">
         <GraphPanel 
           :graphData="graphData"
@@ -46,9 +46,9 @@
         />
       </div>
 
-      <!-- Right Panel: Step Components -->
+      <!-- 右侧面板：步骤组件 -->
       <div class="panel-wrapper right" :style="rightPanelStyle">
-        <!-- Step 1: Graph Build -->
+        <!-- 步骤 1：图谱构建 -->
         <Step1GraphBuild 
           v-if="currentStep === 1"
           :currentPhase="currentPhase"
@@ -59,7 +59,7 @@
           :systemLogs="systemLogs"
           @next-step="handleNextStep"
         />
-        <!-- Step 2: Env Setup -->
+        <!-- 步骤 2：环境配置 -->
         <Step2EnvSetup
           v-else-if="currentStep === 2"
           :projectData="projectData"
@@ -86,30 +86,30 @@ import { getPendingUpload, clearPendingUpload } from '../store/pendingUpload'
 const route = useRoute()
 const router = useRouter()
 
-// Layout State
-const viewMode = ref('split') // graph | split | workbench
+// 布局状态
+const viewMode = ref('split') // 图谱 | 分屏 | 工作台
 
-// Step State
-const currentStep = ref(1) // 1: Graph Build, 2: Env Setup, 3: Simulation, 4: Report, 5: Interaction
-const stepNames = ['Graph Build', 'Env Setup', 'Simulation', 'Report', 'Interaction']
+// 步骤状态
+const currentStep = ref(1) // 1: 图谱构建, 2: 环境配置, 3: 模拟运行, 4: 报告生成, 5: 交互探索
+const stepNames = ['图谱构建', '环境配置', '模拟运行', '报告生成', '交互探索']
 
-// Data State
+// 数据状态
 const currentProjectId = ref(route.params.projectId)
 const loading = ref(false)
 const graphLoading = ref(false)
 const error = ref('')
 const projectData = ref(null)
 const graphData = ref(null)
-const currentPhase = ref(-1) // -1: Upload, 0: Ontology, 1: Build, 2: Complete
+const currentPhase = ref(-1) // -1: 上传, 0: 本体, 1: 构建, 2: 完成
 const ontologyProgress = ref(null)
 const buildProgress = ref(null)
 const systemLogs = ref([])
 
-// Polling timers
+// 轮询定时器
 let pollTimer = null
 let graphPollTimer = null
 
-// --- Computed Layout Styles ---
+// --- 计算布局样式 ---
 const leftPanelStyle = computed(() => {
   if (viewMode.value === 'graph') return { width: '100%', opacity: 1, transform: 'translateX(0)' }
   if (viewMode.value === 'workbench') return { width: '0%', opacity: 0, transform: 'translateX(-20px)' }
@@ -122,7 +122,7 @@ const rightPanelStyle = computed(() => {
   return { width: '50%', opacity: 1, transform: 'translateX(0)' }
 })
 
-// --- Status Computed ---
+// --- 状态计算属性 ---
 const statusClass = computed(() => {
   if (error.value) return 'error'
   if (currentPhase.value >= 2) return 'completed'
@@ -130,24 +130,24 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (error.value) return 'Error'
-  if (currentPhase.value >= 2) return 'Ready'
-  if (currentPhase.value === 1) return 'Building Graph'
-  if (currentPhase.value === 0) return 'Generating Ontology'
-  return 'Initializing'
+  if (error.value) return '错误'
+  if (currentPhase.value >= 2) return '就绪'
+  if (currentPhase.value === 1) return '构建图谱中'
+  if (currentPhase.value === 0) return '生成本体中'
+  return '初始化中'
 })
 
-// --- Helpers ---
+// --- 辅助方法 ---
 const addLog = (msg) => {
   const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '.' + new Date().getMilliseconds().toString().padStart(3, '0')
   systemLogs.value.push({ time, msg })
-  // Keep last 100 logs
+  // 保留最后100条日志
   if (systemLogs.value.length > 100) {
     systemLogs.value.shift()
   }
 }
 
-// --- Layout Methods ---
+// --- 布局方法 ---
 const toggleMaximize = (target) => {
   if (viewMode.value === target) {
     viewMode.value = 'split'
@@ -159,11 +159,11 @@ const toggleMaximize = (target) => {
 const handleNextStep = (params = {}) => {
   if (currentStep.value < 5) {
     currentStep.value++
-    addLog(`Entering Step ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
+    addLog(`进入步骤 ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
 
-    // If entering Step 3 from Step 2, log simulation round config
+    // 如果从步骤2进入步骤3，记录模拟轮次配置
     if (currentStep.value === 3 && params.maxRounds) {
-      addLog(`Custom simulation rounds: ${params.maxRounds}`)
+      addLog(`自定义模拟轮数: ${params.maxRounds}`)
     }
   }
 }
@@ -171,11 +171,11 @@ const handleNextStep = (params = {}) => {
 const handleGoBack = () => {
   if (currentStep.value > 1) {
     currentStep.value--
-    addLog(`Back to Step ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
+    addLog(`返回步骤 ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
   }
 }
 
-// --- Data Logic ---
+// --- 数据逻辑 ---
 
 const initProject = async () => {
   addLog('项目视图已初始化。')
@@ -197,7 +197,7 @@ const handleNewProject = async () => {
   try {
     loading.value = true
     currentPhase.value = 0
-    ontologyProgress.value = { message: 'Uploading and analyzing docs...' }
+    ontologyProgress.value = { message: '正在上传并分析文档...' }
     addLog('开始生成本体：正在上传文件...')
     
     const formData = new FormData()
@@ -212,15 +212,15 @@ const handleNewProject = async () => {
       
       router.replace({ name: 'Process', params: { projectId: res.data.project_id } })
       ontologyProgress.value = null
-      addLog(`Ontology generated successfully for project ${res.data.project_id}`)
+      addLog(`项目 ${res.data.project_id} 本体生成成功`)
       await startBuildGraph()
     } else {
-      error.value = res.error || 'Ontology generation failed'
-      addLog(`Error generating ontology: ${error.value}`)
+      error.value = res.error || '本体生成失败'
+      addLog(`生成本体出错: ${error.value}`)
     }
   } catch (err) {
     error.value = err.message
-    addLog(`Exception in handleNewProject: ${err.message}`)
+    addLog(`handleNewProject 异常: ${err.message}`)
   } finally {
     loading.value = false
   }
@@ -229,12 +229,12 @@ const handleNewProject = async () => {
 const loadProject = async () => {
   try {
     loading.value = true
-    addLog(`Loading project ${currentProjectId.value}...`)
+    addLog(`正在加载项目 ${currentProjectId.value}...`)
     const res = await getProject(currentProjectId.value)
     if (res.success) {
       projectData.value = res.data
       updatePhaseByStatus(res.data.status)
-      addLog(`Project loaded. Status: ${res.data.status}`)
+      addLog(`项目已加载。状态: ${res.data.status}`)
       
       if (res.data.status === 'ontology_generated' && !res.data.graph_id) {
         await startBuildGraph()
@@ -248,11 +248,11 @@ const loadProject = async () => {
       }
     } else {
       error.value = res.error
-      addLog(`Error loading project: ${res.error}`)
+      addLog(`加载项目出错: ${res.error}`)
     }
   } catch (err) {
     error.value = err.message
-    addLog(`Exception in loadProject: ${err.message}`)
+    addLog(`loadProject 异常: ${err.message}`)
   } finally {
     loading.value = false
   }
@@ -264,28 +264,28 @@ const updatePhaseByStatus = (status) => {
     case 'ontology_generated': currentPhase.value = 0; break;
     case 'graph_building': currentPhase.value = 1; break;
     case 'graph_completed': currentPhase.value = 2; break;
-    case 'failed': error.value = 'Project failed'; break;
+    case 'failed': error.value = '项目失败'; break;
   }
 }
 
 const startBuildGraph = async () => {
   try {
     currentPhase.value = 1
-    buildProgress.value = { progress: 0, message: 'Starting build...' }
+    buildProgress.value = { progress: 0, message: '正在启动构建...' }
     addLog('正在启动图构建...')
     
     const res = await buildGraph({ project_id: currentProjectId.value })
     if (res.success) {
-      addLog(`Graph build task started. Task ID: ${res.data.task_id}`)
+      addLog(`图构建任务已启动。任务 ID: ${res.data.task_id}`)
       startGraphPolling()
       startPollingTask(res.data.task_id)
     } else {
       error.value = res.error
-      addLog(`Error starting build: ${res.error}`)
+      addLog(`启动构建出错: ${res.error}`)
     }
   } catch (err) {
     error.value = err.message
-    addLog(`Exception in startBuildGraph: ${err.message}`)
+    addLog(`startBuildGraph 异常: ${err.message}`)
   }
 }
 
@@ -297,7 +297,7 @@ const startGraphPolling = () => {
 
 const fetchGraphData = async () => {
   try {
-    // Refresh project info to check for graph_id
+    // 刷新项目信息以检查 graph_id
     const projRes = await getProject(currentProjectId.value)
     if (projRes.success && projRes.data.graph_id) {
       const gRes = await getGraphData(projRes.data.graph_id)
@@ -305,11 +305,11 @@ const fetchGraphData = async () => {
         graphData.value = gRes.data
         const nodeCount = gRes.data.node_count || gRes.data.nodes?.length || 0
         const edgeCount = gRes.data.edge_count || gRes.data.edges?.length || 0
-        addLog(`Graph data refreshed. Nodes: ${nodeCount}, Edges: ${edgeCount}`)
+        addLog(`图数据已刷新。节点数: ${nodeCount}, 边数: ${edgeCount}`)
       }
     }
   } catch (err) {
-    console.warn('Graph fetch error:', err)
+    console.warn('图数据获取错误:', err)
   }
 }
 
@@ -324,7 +324,7 @@ const pollTaskStatus = async (taskId) => {
     if (res.success) {
       const task = res.data
       
-      // Log progress message if it changed
+      // 如果进度消息改变则记录日志
       if (task.message && task.message !== buildProgress.value?.message) {
         addLog(task.message)
       }
@@ -334,10 +334,10 @@ const pollTaskStatus = async (taskId) => {
       if (task.status === 'completed') {
         addLog('图构建任务已完成。')
         stopPolling()
-        stopGraphPolling() // Stop polling, do final load
+        stopGraphPolling() // 停止轮询，执行最终加载
         currentPhase.value = 2
         
-        // Final load
+        // 最终加载
         const projRes = await getProject(currentProjectId.value)
         if (projRes.success && projRes.data.graph_id) {
             projectData.value = projRes.data
@@ -346,7 +346,7 @@ const pollTaskStatus = async (taskId) => {
       } else if (task.status === 'failed') {
         stopPolling()
         error.value = task.error
-        addLog(`Graph build task failed: ${task.error}`)
+        addLog(`图构建任务失败: ${task.error}`)
       }
     }
   } catch (e) {
@@ -356,14 +356,14 @@ const pollTaskStatus = async (taskId) => {
 
 const loadGraph = async (graphId) => {
   graphLoading.value = true
-  addLog(`Loading full graph data: ${graphId}`)
+  addLog(`正在加载完整图数据: ${graphId}`)
   try {
     const res = await getGraphData(graphId)
     if (res.success) {
       graphData.value = res.data
       addLog('图数据加载成功。')
     } else {
-      addLog(`Failed to load graph data: ${res.error}`)
+      addLog(`加载图数据失败: ${res.error}`)
     }
   } catch (e) {
     addLog(`加载图异常: ${e.message}`)
@@ -414,7 +414,7 @@ onUnmounted(() => {
   font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
 }
 
-/* Header */
+/* 头部 */
 .app-header {
   height: 60px;
   border-bottom: 1px solid #EAEAEA;
@@ -519,7 +519,7 @@ onUnmounted(() => {
 
 @keyframes pulse { 50% { opacity: 0.5; } }
 
-/* Content */
+/* 内容区域 */
 .content-area {
   flex: 1;
   display: flex;
