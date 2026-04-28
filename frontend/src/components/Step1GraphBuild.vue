@@ -6,10 +6,10 @@
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">01</span>
-            <span class="step-title">Ontology Generation</span>
+            <span class="step-title">本体生成</span>
           </div>
           <div class="step-status">
-            <span v-if="currentPhase > 0" class="badge success">Completed</span>
+            <span v-if="currentPhase > 0" class="badge success">已完成</span>
             <span v-else-if="currentPhase === 0" class="badge processing">生成中</span>
             <span v-else class="badge pending">等待中</span>
           </div>
@@ -18,7 +18,7 @@
         <div class="card-content">
           <p class="api-note">POST /api/graph/ontology/generate</p>
           <p class="description">
-            LLM analyzes document content and simulation requirements, extracts reality seeds, and automatically generates appropriate ontology structures
+            LLM 分析文档内容和模拟需求，提取现实种子，自动生成合适的本体结构
           </p>
 
           <!-- Loading / Progress -->
@@ -31,7 +31,7 @@
           <div v-if="selectedOntologyItem" class="ontology-detail-overlay">
             <div class="detail-header">
                <div class="detail-title-group">
-                  <span class="detail-type-badge">{{ selectedOntologyItem.itemType === 'entity' ? 'ENTITY' : 'RELATION' }}</span>
+                  <span class="detail-type-badge">{{ selectedOntologyItem.itemType === 'entity' ? '实体' : '关系' }}</span>
                   <span class="detail-name">{{ selectedOntologyItem.name }}</span>
                </div>
                <button class="close-btn" @click="selectedOntologyItem = null">×</button>
@@ -41,7 +41,7 @@
                
                <!-- Attributes -->
                <div class="detail-section" v-if="selectedOntologyItem.attributes?.length">
-                  <span class="section-label">ATTRIBUTES</span>
+                  <span class="section-label">属性</span>
                   <div class="attr-list">
                      <div v-for="attr in selectedOntologyItem.attributes" :key="attr.name" class="attr-item">
                         <span class="attr-name">{{ attr.name }}</span>
@@ -53,7 +53,7 @@
 
                <!-- Examples (Entity) -->
                <div class="detail-section" v-if="selectedOntologyItem.examples?.length">
-                  <span class="section-label">EXAMPLES</span>
+                  <span class="section-label">示例</span>
                   <div class="example-list">
                      <span v-for="ex in selectedOntologyItem.examples" :key="ex" class="example-tag">{{ ex }}</span>
                   </div>
@@ -61,7 +61,7 @@
 
                <!-- Source/Target (Relation) -->
                <div class="detail-section" v-if="selectedOntologyItem.source_targets?.length">
-                  <span class="section-label">CONNECTIONS</span>
+                  <span class="section-label">连接</span>
                   <div class="conn-list">
                      <div v-for="(conn, idx) in selectedOntologyItem.source_targets" :key="idx" class="conn-item">
                         <span class="conn-node">{{ conn.source }}</span>
@@ -75,7 +75,7 @@
 
           <!-- Generated Entity Tags -->
           <div v-if="projectData?.ontology?.entity_types" class="tags-container" :class="{ 'dimmed': selectedOntologyItem }">
-            <span class="tag-label">GENERATED ENTITY TYPES</span>
+            <span class="tag-label">生成的实体类型</span>
             <div class="tags-list">
               <span 
                 v-for="entity in projectData.ontology.entity_types" 
@@ -90,7 +90,7 @@
 
           <!-- Generated Relation Tags -->
           <div v-if="projectData?.ontology?.edge_types" class="tags-container" :class="{ 'dimmed': selectedOntologyItem }">
-            <span class="tag-label">GENERATED RELATION TYPES</span>
+            <span class="tag-label">生成的关系类型</span>
             <div class="tags-list">
               <span 
                 v-for="rel in projectData.ontology.edge_types" 
@@ -110,10 +110,10 @@
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">02</span>
-            <span class="step-title">GraphRAG Build</span>
+            <span class="step-title">GraphRAG 构建</span>
           </div>
           <div class="step-status">
-            <span v-if="currentPhase > 1" class="badge success">Completed</span>
+            <span v-if="currentPhase > 1" class="badge success">已完成</span>
             <span v-else-if="currentPhase === 1" class="badge processing">{{ buildProgress?.progress || 0 }}%</span>
             <span v-else class="badge pending">等待中</span>
           </div>
@@ -122,22 +122,22 @@
         <div class="card-content">
           <p class="api-note">POST /api/graph/build</p>
           <p class="description">
-            Based on the generated ontology, automatically chunk documents and invoke Neo4j to build knowledge graphs, extract entities and relationships, and form temporal memory and community summaries
+            基于生成的本体，自动对文档进行分块，调用 Neo4j 构建知识图谱，提取实体和关系，形成时序记忆和社区摘要
           </p>
           
           <!-- Stats Cards -->
           <div class="stats-grid">
             <div class="stat-card">
               <span class="stat-value">{{ graphStats.nodes }}</span>
-              <span class="stat-label">Entity Nodes</span>
+              <span class="stat-label">实体节点</span>
             </div>
             <div class="stat-card">
               <span class="stat-value">{{ graphStats.edges }}</span>
-              <span class="stat-label">Relation Edges</span>
+              <span class="stat-label">关系边</span>
             </div>
             <div class="stat-card">
               <span class="stat-value">{{ graphStats.types }}</span>
-              <span class="stat-label">SCHEMA Types</span>
+              <span class="stat-label">本体类型</span>
             </div>
           </div>
         </div>
@@ -148,23 +148,23 @@
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">03</span>
-            <span class="step-title">Build Complete</span>
+            <span class="step-title">构建完成</span>
           </div>
           <div class="step-status">
-            <span v-if="currentPhase >= 2" class="badge accent">In Progress</span>
+            <span v-if="currentPhase >= 2" class="badge accent">进行中</span>
           </div>
         </div>
         
         <div class="card-content">
           <p class="api-note">POST /api/simulation/create</p>
-          <p class="description">Graph build is complete. Please proceed to the next step to set up the simulation environment</p>
+          <p class="description">图谱构建已完成，请进入下一步设置模拟环境</p>
           <button 
             class="action-btn" 
             :disabled="currentPhase < 2 || creatingSimulation"
             @click="handleEnterEnvSetup"
           >
             <span v-if="creatingSimulation" class="spinner-sm"></span>
-            {{ creatingSimulation ? 'Creating...' : 'Enter Environment Setup ➝' }}
+            {{ creatingSimulation ? '创建中...' : '进入环境设置 ➝' }}
           </button>
         </div>
       </div>
@@ -173,8 +173,8 @@
     <!-- Bottom Info / Logs -->
     <div class="system-logs">
       <div class="log-header">
-        <span class="log-title">SYSTEM DASHBOARD</span>
-        <span class="log-id">{{ projectData?.project_id || 'NO_PROJECT' }}</span>
+        <span class="log-title">系统面板</span>
+        <span class="log-id">{{ projectData?.project_id || '无项目' }}</span>
       </div>
       <div class="log-content" ref="logContent">
         <div class="log-line" v-for="(log, idx) in systemLogs" :key="idx">
@@ -211,7 +211,7 @@ const creatingSimulation = ref(false)
 // Enter environment setup - create simulation and navigate
 const handleEnterEnvSetup = async () => {
   if (!props.projectData?.project_id || !props.projectData?.graph_id) {
-    console.error('Missing project or graph information')
+    console.error('缺少项目或图谱信息')
     return
   }
   
@@ -233,11 +233,11 @@ const handleEnterEnvSetup = async () => {
       })
     } else {
       console.error('Failed to create simulation:', res.error)
-      alert('Failed to create simulation: ' + (res.error || 'Unknown error'))
+      alert('创建模拟失败: ' + (res.error || '未知错误'))
     }
   } catch (err) {
-    console.error('Simulation creation exception:', err)
-    alert('Simulation creation exception: ' + err.message)
+    console.error('模拟创建异常:', err)
+    alert('模拟创建异常: ' + err.message)
   } finally {
     creatingSimulation.value = false
   }

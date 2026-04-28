@@ -67,13 +67,13 @@
             </div>
             <!-- If there are more files, show indicator -->
             <div v-if="project.files.length > 3" class="files-more">
-              +{{ project.files.length - 3 }} files
+              +{{ project.files.length - 3 }} 个文件
             </div>
           </div>
           <!-- Placeholder when no files -->
           <div class="files-empty" v-else>
             <span class="empty-file-icon">◇</span>
-            <span class="empty-file-text">No Files</span>
+            <span class="empty-file-text">无文件</span>
           </div>
         </div>
 
@@ -102,7 +102,7 @@
     <!-- Loading state -->
     <div v-if="loading" class="loading-state">
       <span class="loading-spinner"></span>
-      <span class="loading-text">Loading...</span>
+      <span class="loading-text">加载中...</span>
     </div>
 
     <!-- Simulation playback details modal -->
@@ -337,24 +337,24 @@ const truncateText = (text, maxLength) => {
 
 // Generate title from simulation requirement (first 20 characters)
 const getSimulationTitle = (requirement) => {
-  if (!requirement) return 'Unnamed Simulation'
+  if (!requirement) return '未命名模拟'
   const title = requirement.slice(0, 20)
   return requirement.length > 20 ? title + '...' : title
 }
 
 // Format simulation_id display (first 6 characters)
 const formatSimulationId = (simulationId) => {
-  if (!simulationId) return 'SIM_UNKNOWN'
+  if (!simulationId) return '模拟_未知'
   const prefix = simulationId.replace('sim_', '').slice(0, 6)
-  return `SIM_${prefix.toUpperCase()}`
+  return `模拟_${prefix.toUpperCase()}`
 }
 
 // Format round display (current round/total rounds)
 const formatRounds = (simulation) => {
   const current = simulation.current_round || 0
   const total = simulation.total_rounds || 0
-  if (total === 0) return 'Not Started'
-  return `${current}/${total} rounds`
+  if (total === 0) return '未开始'
+  return `${current}/${total} 轮`
 }
 
 // Get file type (for styling)
@@ -375,14 +375,14 @@ const getFileType = (filename) => {
 
 // Get file type label text
 const getFileTypeLabel = (filename) => {
-  if (!filename) return 'FILE'
+  if (!filename) return '文件'
   const ext = filename.split('.').pop()?.toUpperCase()
-  return ext || 'FILE'
+  return ext || '文件'
 }
 
 // Truncate filename (preserve extension)
 const truncateFilename = (filename, maxLength) => {
-  if (!filename) return 'Unknown File'
+  if (!filename) return '未知文件'
   if (filename.length <= maxLength) return filename
 
   const ext = filename.includes('.') ? '.' + filename.split('.').pop() : ''
@@ -443,7 +443,7 @@ const loadHistory = async () => {
       projects.value = response.data || []
     }
   } catch (error) {
-    console.error('Failed to load history projects:', error)
+    console.error('加载历史项目失败:', error)
     projects.value = []
   } finally {
     loading.value = false

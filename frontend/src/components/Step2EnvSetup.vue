@@ -130,7 +130,7 @@
         <div class="card-content">
           <p class="api-note">POST /api/simulation/prepare</p>
           <p class="description">
-            LLM Based on simulation requirements and reality seed，Intelligently set world time flow rate、Recommendation algorithm、Active time period for each individual、Speech frequency、Event trigger and other parameters
+            LLM 根据模拟需求和现实种子，智能设置世界时间流速、推荐算法、每个个体的活跃时间段、发言频率、事件触发等参数
           </p>
           
           <!-- Config Preview -->
@@ -228,7 +228,7 @@
                   <div class="agent-params">
                     <div class="param-group">
                       <div class="param-item">
-                        <span class="param-label">Post/time</span>
+                        <span class="param-label">发布频率</span>
                         <span class="param-value">{{ agent.posts_per_hour }}</span>
                       </div>
                       <div class="param-item">
@@ -236,13 +236,13 @@
                         <span class="param-value">{{ agent.comments_per_hour }}</span>
                       </div>
                       <div class="param-item">
-                        <span class="param-label">Response delay</span>
+                        <span class="param-label">响应延迟</span>
                         <span class="param-value">{{ agent.response_delay_min }}-{{ agent.response_delay_max }}min</span>
                       </div>
                     </div>
                     <div class="param-group">
                       <div class="param-item">
-                        <span class="param-label">Activity level</span>
+                        <span class="param-label">活跃程度</span>
                         <span class="param-value with-bar">
                           <span class="mini-bar" :style="{ width: (agent.activity_level * 100) + '%' }"></span>
                           {{ (agent.activity_level * 100).toFixed(0) }}%
@@ -276,23 +276,23 @@
                   </div>
                   <div class="platform-params">
                     <div class="param-row">
-                      <span class="param-label">Time weight</span>
+                      <span class="param-label">时间权重</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.recency_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">Popularity weight</span>
+                      <span class="param-label">热度权重</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.popularity_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">Relevance weight</span>
+                      <span class="param-label">相关度权重</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.relevance_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">Virus threshold</span>
+                      <span class="param-label">病毒传播阈值</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.viral_threshold }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">Echo chamber strength</span>
+                      <span class="param-label">信息茧房强度</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.echo_chamber_strength }}</span>
                     </div>
                   </div>
@@ -303,23 +303,23 @@
                   </div>
                   <div class="platform-params">
                     <div class="param-row">
-                      <span class="param-label">Time weight</span>
+                      <span class="param-label">时间权重</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.recency_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">Popularity weight</span>
+                      <span class="param-label">热度权重</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.popularity_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">Relevance weight</span>
+                      <span class="param-label">相关度权重</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.relevance_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">Virus threshold</span>
+                      <span class="param-label">病毒传播阈值</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.viral_threshold }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">Echo chamber strength</span>
+                      <span class="param-label">信息茧房强度</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.echo_chamber_strength }}</span>
                     </div>
                   </div>
@@ -354,7 +354,7 @@
             <span class="step-title">初始激活安排</span>
           </div>
           <div class="step-status">
-            <span v-if="phase > 3" class="badge success">Completed</span>
+            <span v-if="phase > 3" class="badge success">已完成</span>
             <span v-else-if="phase === 3" class="badge processing">安排中</span>
             <span v-else class="badge pending">等待中</span>
           </div>
@@ -363,7 +363,7 @@
         <div class="card-content">
           <p class="api-note">POST /api/simulation/prepare</p>
           <p class="description">
-            Based on narrative direction，Automatically generate initial activation events and trending topics，Guide the initial state of the simulated world
+            根据叙事方向，自动生成初始激活事件和热门话题，引导模拟世界的初始状态
           </p>
 
           <div v-if="simulationConfig?.event_config" class="orchestration-content">
@@ -380,7 +380,7 @@
                     </linearGradient>
                   </defs>
                 </svg>
-                Narrative Guidance Direction
+                叙事引导方向
               </span>
               <p class="narrative-text">{{ simulationConfig.event_config.narrative_direction }}</p>
             </div>
@@ -478,7 +478,7 @@
                       :class="{ active: customMaxRounds === 40 }"
                       @click="customMaxRounds = 40"
                       :style="{ position: 'absolute', left: `calc(${(40 - 10) / (autoGeneratedRounds - 10) * 100}% - 30px)` }"
-                    >40 (Recommendation)</span>
+                    >40 (推荐)</span>
                     <span>{{ autoGeneratedRounds }}</span>
                   </div>
                 </div>
@@ -548,14 +548,14 @@
           <div class="modal-info-grid">
             <div class="info-item">
               <span class="info-label">年龄表现</span>
-              <span class="info-value">{{ selectedProfile.age || '-' }} years old</span>
+              <span class="info-value">{{ selectedProfile.age || '-' }} 岁</span>
             </div>
             <div class="info-item">
               <span class="info-label">性别表现</span>
-              <span class="info-value">{{ { male: 'Male', female: 'Female', other: 'Other' }[selectedProfile.gender] || selectedProfile.gender }}</span>
+              <span class="info-value">{{ { male: '男性', female: '女性', other: '其他' }[selectedProfile.gender] || selectedProfile.gender }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">Country/Region</span>
+              <span class="info-label">国家/地区</span>
               <span class="info-value">{{ selectedProfile.country || '-' }}</span>
             </div>
             <div class="info-item">
@@ -618,8 +618,8 @@
     <!-- Bottom Info / Logs -->
     <div class="system-logs">
       <div class="log-header">
-        <span class="log-title">SYSTEM DASHBOARD</span>
-        <span class="log-id">{{ simulationId || 'NO_SIMULATION' }}</span>
+        <span class="log-title">系统面板</span>
+        <span class="log-id">{{ simulationId || '无模拟' }}</span>
       </div>
       <div class="log-content" ref="logContent">
         <div class="log-line" v-for="(log, idx) in systemLogs" :key="idx">
@@ -674,16 +674,16 @@ const customMaxRounds = ref(40)   // Default recommendation40rounds
 
 // Watch stage to update phase
 watch(currentStage, (newStage) => {
-  if (newStage === 'GenerateAgentPersona' || newStage === 'generating_profiles') {
+  if (newStage === '生成智能体画像' || newStage === 'generating_profiles') {
     phase.value = 1
-  } else if (newStage === 'Generate Simulation Configuration' || newStage === 'generating_config') {
+  } else if (newStage === '生成模拟配置' || newStage === 'generating_config') {
     phase.value = 2
     // Enter configuration generation phase，Start polling configuration
     if (!configTimer) {
       addLog('开始生成双平台模拟配置...')
       startConfigPolling()
     }
-  } else if (newStage === 'Prepare simulation script' || newStage === 'copying_scripts') {
+  } else if (newStage === '准备模拟脚本' || newStage === 'copying_scripts') {
     phase.value = 2 // Still in configuration phase
   }
 })
@@ -794,15 +794,15 @@ const startPrepareSimulation = async () => {
       }
       
       taskId.value = res.data.task_id
-      addLog(`Preparation task started`)
-      addLog(`  └─ Task ID: ${res.data.task_id}`)
+      addLog(`准备任务已启动`)
+      addLog(`  └─ 任务ID: ${res.data.task_id}`)
       
       // Set immediatelyExpected Agent Total（FromprepareInterface return value retrieval）
       if (res.data.expected_entities_count) {
         expectedTotal.value = res.data.expected_entities_count
-        addLog(`FromNeo4jGraph read ${res.data.expected_entities_count} entities`)
+        addLog(`从Neo4j图谱读取 ${res.data.expected_entities_count} 个实体`)
         if (res.data.entity_types && res.data.entity_types.length > 0) {
-          addLog(`  └─ Entity Type: ${res.data.entity_types.join(', ')}`)
+          addLog(`  └─ 实体类型: ${res.data.entity_types.join(', ')}`)
         }
       }
       
@@ -812,11 +812,11 @@ const startPrepareSimulation = async () => {
       // Start real-time fetching Profiles
       startProfilesPolling()
     } else {
-      addLog(`Preparation failed: ${res.error || 'Unknown error'}`)
+      addLog(`准备失败: ${res.error || '未知错误'}`)
       emit('update-status', 'error')
     }
   } catch (err) {
-    addLog(`Preparation exception: ${err.message}`)
+    addLog(`准备异常: ${err.message}`)
     emit('update-status', 'error')
   }
 }
@@ -895,7 +895,7 @@ const pollPrepareStatus = async () => {
         stopProfilesPolling()
         await loadPreparedData()
       } else if (data.status === 'failed') {
-        addLog(`✗ Preparation failed: ${data.error || 'Unknown error'}`)
+        addLog(`✗ 准备失败: ${data.error || '未知错误'}`)
         stopPolling()
         stopProfilesPolling()
       }
@@ -934,13 +934,13 @@ const fetchProfilesRealtime = async () => {
         const latestProfile = profiles.value[currentCount - 1]
         const profileName = latestProfile?.name || latestProfile?.username || `Agent_${currentCount}`
         if (currentCount === 1) {
-          addLog(`Start generationAgentPersona...`)
+          addLog(`开始生成智能体画像...`)
         }
-        addLog(`→ AgentPersona ${currentCount}/${total}: ${profileName} (${latestProfile?.profession || 'Unknown Profession'})`)
+        addLog(`→ 智能体画像 ${currentCount}/${total}: ${profileName} (${latestProfile?.profession || '未知职业'})`)
         
         // If all generation is completed
         if (expectedTotal.value && currentCount >= expectedTotal.value) {
-          addLog(`✓ 所有 (All) ${currentCount} 个 Agent 画像生成完成`)
+          addLog(`✓ 所有 ${currentCount} 个智能体画像生成完成`)
         }
       }
     }
@@ -974,36 +974,36 @@ const fetchConfigRealtime = async () => {
       if (data.generation_stage && data.generation_stage !== lastLoggedConfigStage) {
         lastLoggedConfigStage = data.generation_stage
         if (data.generation_stage === 'generating_profiles') {
-          addLog('正在生成Agent画像配置...')
+          addLog('正在生成智能体画像配置...')
         } else if (data.generation_stage === 'generating_config') {
           addLog('正在调用LLM生成模拟配置参数...')
         }
       }
       
       // If configuration is generated
-      if (data.config_generated && data.config) {
+        if (data.config_generated && data.config) {
         simulationConfig.value = data.config
         addLog('✓ 模拟配置生成完成')
         
         // Show detailed configuration summary
         if (data.summary) {
-          addLog(`  ├─ AgentQuantity: ${data.summary.total_agents}Number`)
-          addLog(`  ├─ Simulation Duration: ${data.summary.simulation_hours}hours`)
-          addLog(`  ├─ Initial posts: ${data.summary.initial_posts_count}items`)
-          addLog(`  ├─ Trending Topics: ${data.summary.hot_topics_count}Number`)
-          addLog(`  └─ Platform configuration: Twitter ${data.summary.has_twitter_config ? '✓' : '✗'}, Reddit ${data.summary.has_reddit_config ? '✓' : '✗'}`)
+          addLog(`  ├─ 智能体数量: ${data.summary.total_agents}个`)
+          addLog(`  ├─ 模拟时长: ${data.summary.simulation_hours}小时`)
+          addLog(`  ├─ 初始帖子: ${data.summary.initial_posts_count}条`)
+          addLog(`  ├─ 热门话题: ${data.summary.hot_topics_count}个`)
+          addLog(`  └─ 平台配置: Twitter ${data.summary.has_twitter_config ? '✓' : '✗'}, Reddit ${data.summary.has_reddit_config ? '✓' : '✗'}`)
         }
         
         // Show time configuration details
         if (data.config.time_config) {
           const tc = data.config.time_config
-          addLog(`Time Configuration: Per round${tc.minutes_per_round}minutes, Total${Math.floor((tc.total_simulation_hours * 60) / tc.minutes_per_round)}rounds`)
+          addLog(`时间配置: 每轮${tc.minutes_per_round}分钟, 共${Math.floor((tc.total_simulation_hours * 60) / tc.minutes_per_round)}轮`)
         }
         
         // Show event configuration
         if (data.config.event_config?.narrative_direction) {
           const narrative = data.config.event_config.narrative_direction
-          addLog(`Narrative Direction: ${narrative.length > 50 ? narrative.substring(0, 50) + '...' : narrative}`)
+          addLog(`叙事方向: ${narrative.length > 50 ? narrative.substring(0, 50) + '...' : narrative}`)
         }
         
         stopConfigPolling()
@@ -1023,7 +1023,7 @@ const loadPreparedData = async () => {
 
   // Get one last time Profiles
   await fetchProfilesRealtime()
-  addLog(`Loaded ${profiles.value.length} NumberAgentPersona`)
+  addLog(`已加载 ${profiles.value.length} 个智能体画像`)
 
   // Get configuration（Use real-time interface）
   try {
@@ -1035,9 +1035,9 @@ const loadPreparedData = async () => {
         
         // Show detailed configuration summary
         if (res.data.summary) {
-          addLog(`  ├─ AgentQuantity: ${res.data.summary.total_agents}Number`)
-          addLog(`  ├─ Simulation Duration: ${res.data.summary.simulation_hours}hours`)
-          addLog(`  └─ Initial posts: ${res.data.summary.initial_posts_count}items`)
+          addLog(`  ├─ 智能体数量: ${res.data.summary.total_agents}个`)
+          addLog(`  ├─ 模拟时长: ${res.data.summary.simulation_hours}小时`)
+          addLog(`  └─ 初始帖子: ${res.data.summary.initial_posts_count}条`)
         }
         
         addLog('✓ 环境配置完成，可以开始模拟')
@@ -1050,7 +1050,7 @@ const loadPreparedData = async () => {
       }
     }
   } catch (err) {
-    addLog(`Failed to load configuration: ${err.message}`)
+    addLog(`加载配置失败: ${err.message}`)
     emit('update-status', 'error')
   }
 }

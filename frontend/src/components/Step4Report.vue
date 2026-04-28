@@ -8,7 +8,7 @@
           <!-- Report Header -->
           <div class="report-header-block">
             <div class="report-meta">
-              <span class="report-tag">Prediction Report</span>
+              <span class="report-tag">预测报告</span>
               <span class="report-id">ID: {{ reportId || 'REF-2024-X92' }}</span>
             </div>
             <h1 class="main-title">{{ reportOutline.title }}</h1>
@@ -72,7 +72,7 @@
             <div class="waiting-ring"></div>
             <div class="waiting-ring"></div>
           </div>
-          <span class="waiting-text">Waiting for Report Agent...</span>
+          <span class="waiting-text">正在等待报告智能体...</span>
         </div>
       </div>
 
@@ -89,15 +89,15 @@
         <div class="workflow-overview" v-if="agentLogs.length > 0 || reportOutline">
           <div class="workflow-metrics">
             <div class="metric">
-              <span class="metric-label">Sections</span>
+              <span class="metric-label">章节</span>
               <span class="metric-value mono">{{ completedSections }}/{{ totalSections }}</span>
             </div>
             <div class="metric">
-              <span class="metric-label">Elapsed</span>
+              <span class="metric-label">已用时间</span>
               <span class="metric-value mono">{{ formatElapsedTime }}</span>
             </div>
             <div class="metric">
-              <span class="metric-label">Tools</span>
+              <span class="metric-label">工具</span>
               <span class="metric-value mono">{{ totalToolCalls }}</span>
             </div>
             <div class="metric metric-right">
@@ -309,10 +309,10 @@
                     <div class="llm-meta">
                       <span class="meta-tag">Iteration {{ log.details?.iteration }}</span>
                       <span class="meta-tag" :class="{ active: log.details?.has_tool_calls }">
-                        Tools: {{ log.details?.has_tool_calls ? 'Yes' : 'No' }}
+                        工具: {{ log.details?.has_tool_calls ? '是' : '否' }}
                       </span>
                       <span class="meta-tag" :class="{ active: log.details?.has_final_answer, 'final-answer': log.details?.has_final_answer }">
-                        Final: {{ log.details?.has_final_answer ? 'Yes' : 'No' }}
+                        最终: {{ log.details?.has_final_answer ? '是' : '否' }}
                       </span>
                     </div>
                     <!-- Show special hint when it's the final answer -->
@@ -357,7 +357,7 @@
                     
                     <!-- LLM Response: Show/Hide Response -->
                     <button v-if="log.action === 'llm_response' && log.details?.response" class="action-btn" @click.stop="toggleLogExpand(log)">
-                      {{ expandedLogs.has(log.timestamp) ? 'Hide Response' : 'Show Response' }}
+                      {{ expandedLogs.has(log.timestamp) ? '隐藏响应' : '显示响应' }}
                     </button>
                   </div>
                 </div>
@@ -368,7 +368,7 @@
           <!-- Empty State -->
           <div v-if="agentLogs.length === 0 && !isComplete" class="workflow-empty">
             <div class="empty-pulse"></div>
-            <span>等待Agent活动...</span>
+            <span>等待智能体活动...</span>
           </div>
         </div>
       </div>
@@ -377,8 +377,8 @@
     <!-- Bottom Console Logs -->
     <div class="console-logs">
       <div class="log-header">
-        <span class="log-title">CONSOLE OUTPUT</span>
-        <span class="log-id">{{ reportId || 'NO_REPORT' }}</span>
+        <span class="log-title">控制台输出</span>
+        <span class="log-id">{{ reportId || '无报告' }}</span>
       </div>
       <div class="log-content" ref="logContent">
         <div class="log-line" v-for="(log, idx) in consoleLogs" :key="idx">
@@ -495,12 +495,12 @@ const isLogCollapsed = (log) => {
 // Tool configurations with display names and colors
 const toolConfig = {
   'insight_forge': {
-    name: 'Deep Insight',
+    name: '深度洞察',
     color: 'purple',
     icon: 'lightbulb' // Lightbulb icon - represents insight
   },
   'panorama_search': {
-    name: 'Panorama Search',
+    name: '全景搜索',
     color: 'blue',
     icon: 'globe' // Globe icon - represents panorama search
   },
@@ -510,17 +510,17 @@ const toolConfig = {
     icon: 'users' // User icon - represents conversation
   },
   'quick_search': {
-    name: 'Quick Search',
+    name: '快速搜索',
     color: 'orange',
     icon: 'zap' // Lightning icon - represents speed
   },
   'get_graph_statistics': {
-    name: 'Graph Stats',
+    name: '图谱统计',
     color: 'cyan',
     icon: 'chart' // Chart icon - represents statistics
   },
   'get_entities_by_type': {
-    name: 'Entity Query',
+    name: '实体查询',
     color: 'pink',
     icon: 'database' // Database icon - represents entities
   }
@@ -616,7 +616,7 @@ const parseInsightForge = (text) => {
       }).filter(Boolean)
     }
   } catch (e) {
-    console.warn('Parse insight_forge failed:', e)
+    console.warn('解析深度洞察失败:', e)
   }
   
   return result
@@ -678,7 +678,7 @@ const parsePanorama = (text) => {
       }).filter(Boolean)
     }
   } catch (e) {
-    console.warn('Parse panorama failed:', e)
+    console.warn('解析全景搜索失败:', e)
   }
   
   return result
@@ -893,7 +893,7 @@ const parseInterview = (text) => {
       result.summary = summaryMatch[1].trim()
     }
   } catch (e) {
-    console.warn('Parse interview failed:', e)
+    console.warn('解析智能体访谈失败:', e)
   }
   
   return result
@@ -950,7 +950,7 @@ const parseQuickSearch = (text) => {
       }).filter(Boolean)
     }
   } catch (e) {
-    console.warn('Parse quick_search failed:', e)
+    console.warn('解析快速搜索失败:', e)
   }
   
   return result
@@ -981,21 +981,21 @@ const InsightDisplay = {
       // Header Section - like interview header
       h('div', { class: 'insight-header' }, [
         h('div', { class: 'header-main' }, [
-          h('div', { class: 'header-title' }, 'Deep Insight'),
+          h('div', { class: 'header-title' }, '深度洞察'),
           h('div', { class: 'header-stats' }, [
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.facts || props.result.facts.length),
-              h('span', { class: 'stat-label' }, 'Facts')
+              h('span', { class: 'stat-label' }, '事实')
             ]),
             h('span', { class: 'stat-divider' }, '/'),
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.entities || props.result.entities.length),
-              h('span', { class: 'stat-label' }, 'Entities')
+              h('span', { class: 'stat-label' }, '实体')
             ]),
             h('span', { class: 'stat-divider' }, '/'),
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.relationships || props.result.relations.length),
-              h('span', { class: 'stat-label' }, 'Relations')
+              h('span', { class: 'stat-label' }, '关系')
             ]),
             props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
@@ -1003,7 +1003,7 @@ const InsightDisplay = {
         ]),
         props.result.query && h('div', { class: 'header-topic' }, props.result.query),
         props.result.simulationRequirement && h('div', { class: 'header-scenario' }, [
-          h('span', { class: 'scenario-label' }, 'Prediction Scenario: '),
+          h('span', { class: 'scenario-label' }, '预测场景: '),
           h('span', { class: 'scenario-text' }, props.result.simulationRequirement)
         ])
       ]),
@@ -1014,19 +1014,19 @@ const InsightDisplay = {
           class: ['insight-tab', { active: activeTab.value === 'facts' }],
           onClick: () => { activeTab.value = 'facts' }
         }, [
-          h('span', { class: 'tab-label' }, `Current Key Memory (${props.result.facts.length})`)
+          h('span', { class: 'tab-label' }, `当前关键记忆 (${props.result.facts.length})`)
         ]),
         h('button', {
           class: ['insight-tab', { active: activeTab.value === 'entities' }],
           onClick: () => { activeTab.value = 'entities' }
         }, [
-          h('span', { class: 'tab-label' }, `Core Entities (${props.result.entities.length})`)
+          h('span', { class: 'tab-label' }, `核心实体 (${props.result.entities.length})`)
         ]),
         h('button', {
           class: ['insight-tab', { active: activeTab.value === 'relations' }],
           onClick: () => { activeTab.value = 'relations' }
         }, [
-          h('span', { class: 'tab-label' }, `Relationship Chains (${props.result.relations.length})`)
+          h('span', { class: 'tab-label' }, `关系链 (${props.result.relations.length})`)
         ]),
         props.result.subQueries.length > 0 && h('button', {
           class: ['insight-tab', { active: activeTab.value === 'subqueries' }],
@@ -1041,8 +1041,8 @@ const InsightDisplay = {
         // Facts Tab
         activeTab.value === 'facts' && props.result.facts.length > 0 && h('div', { class: 'facts-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'Latest Key Facts Associated in Sequential Memory'),
-            h('span', { class: 'panel-count' }, `Total ${props.result.facts.length} items`)
+            h('span', { class: 'panel-title' }, '时序记忆中关联的最新关键事实'),
+            h('span', { class: 'panel-count' }, `共 ${props.result.facts.length} 项`)
           ]),
           h('div', { class: 'facts-list' },
             (expandedFacts.value ? props.result.facts : props.result.facts.slice(0, INITIAL_SHOW_COUNT)).map((fact, i) => 
@@ -1055,35 +1055,35 @@ const InsightDisplay = {
           props.result.facts.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedFacts.value = !expandedFacts.value }
-          }, expandedFacts.value ? `Collapse ▲` : `Expand All ${props.result.facts.length} items ▼`)
+          }, expandedFacts.value ? `收起 ▲` : `展开全部 ${props.result.facts.length} 项 ▼`)
         ]),
         
         // Entities Tab
         activeTab.value === 'entities' && props.result.entities.length > 0 && h('div', { class: 'entities-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'Core Entities'),
-            h('span', { class: 'panel-count' }, `Total ${props.result.entities.length} items`)
+            h('span', { class: 'panel-title' }, '核心实体'),
+            h('span', { class: 'panel-count' }, `共 ${props.result.entities.length} 项`)
           ]),
           h('div', { class: 'entities-grid' },
             (expandedEntities.value ? props.result.entities : props.result.entities.slice(0, 12)).map((entity, i) => 
               h('div', { class: 'entity-tag', key: i, title: entity.summary || '' }, [
                 h('span', { class: 'entity-name' }, entity.name),
                 h('span', { class: 'entity-type' }, entity.type),
-                entity.relatedFactsCount > 0 && h('span', { class: 'entity-fact-count' }, `${entity.relatedFactsCount} items`)
+                entity.relatedFactsCount > 0 && h('span', { class: 'entity-fact-count' }, `${entity.relatedFactsCount} 项`)
               ])
             )
           ),
           props.result.entities.length > 12 && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedEntities.value = !expandedEntities.value }
-          }, expandedEntities.value ? `Collapse ▲` : `Expand All ${props.result.entities.length} items ▼`)
+          }, expandedEntities.value ? `收起 ▲` : `展开全部 ${props.result.entities.length} 项 ▼`)
         ]),
         
         // Relations Tab
         activeTab.value === 'relations' && props.result.relations.length > 0 && h('div', { class: 'relations-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'Relationship Chains'),
-            h('span', { class: 'panel-count' }, `Total ${props.result.relations.length} items`)
+            h('span', { class: 'panel-title' }, '关系链'),
+            h('span', { class: 'panel-count' }, `共 ${props.result.relations.length} 项`)
           ]),
           h('div', { class: 'relations-list' },
             (expandedRelations.value ? props.result.relations : props.result.relations.slice(0, INITIAL_SHOW_COUNT)).map((rel, i) => 
@@ -1101,14 +1101,14 @@ const InsightDisplay = {
           props.result.relations.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedRelations.value = !expandedRelations.value }
-          }, expandedRelations.value ? `Collapse ▲` : `Expand All ${props.result.relations.length} items ▼`)
+          }, expandedRelations.value ? `收起 ▲` : `展开全部 ${props.result.relations.length} 项 ▼`)
         ]),
         
         // Sub-queries Tab
         activeTab.value === 'subqueries' && props.result.subQueries.length > 0 && h('div', { class: 'subqueries-panel' }, [
           h('div', { class: 'panel-header' }, [
             h('span', { class: 'panel-title' }, '漂移查询生成的子问题'),
-            h('span', { class: 'panel-count' }, `Total ${props.result.subQueries.length} items`)
+            h('span', { class: 'panel-count' }, `共 ${props.result.subQueries.length} 项`)
           ]),
           h('div', { class: 'subqueries-list' },
             props.result.subQueries.map((sq, i) => 
@@ -1121,9 +1121,9 @@ const InsightDisplay = {
         ]),
         
         // Empty state
-        activeTab.value === 'facts' && props.result.facts.length === 0 && h('div', { class: 'empty-state' }, 'No current key memory'),
-        activeTab.value === 'entities' && props.result.entities.length === 0 && h('div', { class: 'empty-state' }, 'No core entities'),
-        activeTab.value === 'relations' && props.result.relations.length === 0 && h('div', { class: 'empty-state' }, 'No relationship chains')
+        activeTab.value === 'facts' && props.result.facts.length === 0 && h('div', { class: 'empty-state' }, '无当前关键记忆'),
+        activeTab.value === 'entities' && props.result.entities.length === 0 && h('div', { class: 'empty-state' }, '无核心实体'),
+        activeTab.value === 'relations' && props.result.relations.length === 0 && h('div', { class: 'empty-state' }, '无关系链')
       ])
     ])
   }
@@ -1152,16 +1152,16 @@ const PanoramaDisplay = {
       // Header Section
       h('div', { class: 'panorama-header' }, [
         h('div', { class: 'header-main' }, [
-          h('div', { class: 'header-title' }, 'Panorama Search'),
+          h('div', { class: 'header-title' }, '全景搜索'),
           h('div', { class: 'header-stats' }, [
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.nodes),
-              h('span', { class: 'stat-label' }, 'Nodes')
+              h('span', { class: 'stat-label' }, '节点')
             ]),
             h('span', { class: 'stat-divider' }, '/'),
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.edges),
-              h('span', { class: 'stat-label' }, 'Edges')
+              h('span', { class: 'stat-label' }, '边')
             ]),
             props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
@@ -1176,19 +1176,19 @@ const PanoramaDisplay = {
           class: ['panorama-tab', { active: activeTab.value === 'active' }],
           onClick: () => { activeTab.value = 'active' }
         }, [
-          h('span', { class: 'tab-label' }, `Current Active Memory (${props.result.activeFacts.length})`)
+          h('span', { class: 'tab-label' }, `当前活跃记忆 (${props.result.activeFacts.length})`)
         ]),
         h('button', {
           class: ['panorama-tab', { active: activeTab.value === 'historical' }],
           onClick: () => { activeTab.value = 'historical' }
         }, [
-          h('span', { class: 'tab-label' }, `Historical Memory (${props.result.historicalFacts.length})`)
+          h('span', { class: 'tab-label' }, `历史记忆 (${props.result.historicalFacts.length})`)
         ]),
         h('button', {
           class: ['panorama-tab', { active: activeTab.value === 'entities' }],
           onClick: () => { activeTab.value = 'entities' }
         }, [
-          h('span', { class: 'tab-label' }, `Involved Entities (${props.result.entities.length})`)
+          h('span', { class: 'tab-label' }, `涉及实体 (${props.result.entities.length})`)
         ])
       ]),
       
@@ -1197,8 +1197,8 @@ const PanoramaDisplay = {
         // Active Facts Tab
         activeTab.value === 'active' && h('div', { class: 'facts-panel active-facts' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'Current Active Memory'),
-            h('span', { class: 'panel-count' }, `Total ${props.result.activeFacts.length} items`)
+            h('span', { class: 'panel-title' }, '当前活跃记忆'),
+            h('span', { class: 'panel-count' }, `共 ${props.result.activeFacts.length} 项`)
           ]),
           props.result.activeFacts.length > 0 ? h('div', { class: 'facts-list' },
             (expandedActive.value ? props.result.activeFacts : props.result.activeFacts.slice(0, INITIAL_SHOW_COUNT)).map((fact, i) => 
@@ -1207,18 +1207,18 @@ const PanoramaDisplay = {
                 h('div', { class: 'fact-content' }, fact)
               ])
             )
-          ) : h('div', { class: 'empty-state' }, 'No current active memory'),
+          ) : h('div', { class: 'empty-state' }, '无当前活跃记忆'),
           props.result.activeFacts.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedActive.value = !expandedActive.value }
-          }, expandedActive.value ? `Collapse ▲` : `Expand All ${props.result.activeFacts.length} items ▼`)
+          }, expandedActive.value ? `收起 ▲` : `展开全部 ${props.result.activeFacts.length} 项 ▼`)
         ]),
         
         // Historical Facts Tab
         activeTab.value === 'historical' && h('div', { class: 'facts-panel historical-facts' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'Historical Memory'),
-            h('span', { class: 'panel-count' }, `Total ${props.result.historicalFacts.length} items`)
+            h('span', { class: 'panel-title' }, '历史记忆'),
+            h('span', { class: 'panel-count' }, `共 ${props.result.historicalFacts.length} 项`)
           ]),
           props.result.historicalFacts.length > 0 ? h('div', { class: 'facts-list' },
             (expandedHistorical.value ? props.result.historicalFacts : props.result.historicalFacts.slice(0, INITIAL_SHOW_COUNT)).map((fact, i) => 
@@ -1239,18 +1239,18 @@ const PanoramaDisplay = {
                 ])
               ])
             )
-          ) : h('div', { class: 'empty-state' }, 'No historical memory'),
+          ) : h('div', { class: 'empty-state' }, '无历史记忆'),
           props.result.historicalFacts.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedHistorical.value = !expandedHistorical.value }
-          }, expandedHistorical.value ? `Collapse ▲` : `Expand All ${props.result.historicalFacts.length} items ▼`)
+          }, expandedHistorical.value ? `收起 ▲` : `展开全部 ${props.result.historicalFacts.length} 项 ▼`)
         ]),
         
         // Entities Tab
         activeTab.value === 'entities' && h('div', { class: 'entities-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'Involved Entities'),
-            h('span', { class: 'panel-count' }, `Total ${props.result.entities.length} items`)
+            h('span', { class: 'panel-title' }, '涉及实体'),
+            h('span', { class: 'panel-count' }, `共 ${props.result.entities.length} 项`)
           ]),
           props.result.entities.length > 0 ? h('div', { class: 'entities-grid' },
             (expandedEntities.value ? props.result.entities : props.result.entities.slice(0, 8)).map((entity, i) => 
@@ -1259,11 +1259,11 @@ const PanoramaDisplay = {
                 entity.type && h('span', { class: 'entity-type' }, entity.type)
               ])
             )
-          ) : h('div', { class: 'empty-state' }, 'No involved entities'),
+          ) : h('div', { class: 'empty-state' }, '无涉及实体'),
           props.result.entities.length > 8 && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedEntities.value = !expandedEntities.value }
-          }, expandedEntities.value ? `Collapse ▲` : `Expand All ${props.result.entities.length} items ▼`)
+          }, expandedEntities.value ? `收起 ▲` : `展开全部 ${props.result.entities.length} 项 ▼`)
         ])
       ])
     ])
@@ -1643,7 +1643,7 @@ const QuickSearchDisplay = {
         ((!showTabs.value) || activeTab.value === 'facts') && h('div', { class: 'facts-panel' }, [
           !showTabs.value && h('div', { class: 'panel-header' }, [
             h('span', { class: 'panel-title' }, 'Search Results'),
-            h('span', { class: 'panel-count' }, `Total ${props.result.facts.length} items`)
+            h('span', { class: 'panel-count' }, `共 ${props.result.facts.length} 项`)
           ]),
           props.result.facts.length > 0 ? h('div', { class: 'facts-list' },
             (expandedFacts.value ? props.result.facts : props.result.facts.slice(0, INITIAL_SHOW_COUNT)).map((fact, i) => 
@@ -1656,7 +1656,7 @@ const QuickSearchDisplay = {
           props.result.facts.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedFacts.value = !expandedFacts.value }
-          }, expandedFacts.value ? `Collapse ▲` : `Expand All ${props.result.facts.length} items ▼`)
+          }, expandedFacts.value ? `收起 ▲` : `展开全部 ${props.result.facts.length} 项 ▼`)
         ]),
         
         // Edges Tab

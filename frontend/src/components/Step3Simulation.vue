@@ -9,7 +9,7 @@
             <svg class="platform-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
             </svg>
-            <span class="platform-name">Info Plaza</span>
+            <span class="platform-name">广场/信息流</span>
             <span v-if="runStatus.twitter_completed" class="status-badge">
               <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3">
                 <polyline points="20 6 9 17 4 12"></polyline>
@@ -22,7 +22,7 @@
               <span class="stat-value mono">{{ runStatus.twitter_current_round || 0 }}<span class="stat-total">/{{ runStatus.total_rounds || maxRounds || '-' }}</span></span>
             </span>
             <span class="stat">
-              <span class="stat-label">Elapsed Time</span>
+              <span class="stat-label">已用时间</span>
               <span class="stat-value mono">{{ twitterElapsedTime }}</span>
             </span>
             <span class="stat">
@@ -32,14 +32,14 @@
           </div>
           <!-- Available Actions Tooltip -->
           <div class="actions-tooltip">
-            <div class="tooltip-title">Available Actions</div>
+            <div class="tooltip-title">可用动作</div>
             <div class="tooltip-actions">
-              <span class="tooltip-action">POST</span>
-              <span class="tooltip-action">LIKE</span>
-              <span class="tooltip-action">REPOST</span>
-              <span class="tooltip-action">QUOTE</span>
-              <span class="tooltip-action">FOLLOW</span>
-              <span class="tooltip-action">IDLE</span>
+              <span class="tooltip-action">发布</span>
+              <span class="tooltip-action">点赞</span>
+              <span class="tooltip-action">转发</span>
+              <span class="tooltip-action">引用</span>
+              <span class="tooltip-action">关注</span>
+              <span class="tooltip-action">空闲</span>
             </div>
           </div>
         </div>
@@ -50,7 +50,7 @@
             <svg class="platform-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
             </svg>
-            <span class="platform-name">Topic Community</span>
+            <span class="platform-name">话题/社区</span>
             <span v-if="runStatus.reddit_completed" class="status-badge">
               <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3">
                 <polyline points="20 6 9 17 4 12"></polyline>
@@ -63,7 +63,7 @@
               <span class="stat-value mono">{{ runStatus.reddit_current_round || 0 }}<span class="stat-total">/{{ runStatus.total_rounds || maxRounds || '-' }}</span></span>
             </span>
             <span class="stat">
-              <span class="stat-label">Elapsed Time</span>
+              <span class="stat-label">已用时间</span>
               <span class="stat-value mono">{{ redditElapsedTime }}</span>
             </span>
             <span class="stat">
@@ -73,18 +73,18 @@
           </div>
           <!-- Available Actions Tooltip -->
           <div class="actions-tooltip">
-            <div class="tooltip-title">Available Actions</div>
+            <div class="tooltip-title">可用动作</div>
             <div class="tooltip-actions">
-              <span class="tooltip-action">POST</span>
-              <span class="tooltip-action">COMMENT</span>
-              <span class="tooltip-action">LIKE</span>
-              <span class="tooltip-action">DISLIKE</span>
-              <span class="tooltip-action">SEARCH</span>
-              <span class="tooltip-action">TREND</span>
-              <span class="tooltip-action">FOLLOW</span>
-              <span class="tooltip-action">MUTE</span>
-              <span class="tooltip-action">REFRESH</span>
-              <span class="tooltip-action">IDLE</span>
+              <span class="tooltip-action">发布</span>
+              <span class="tooltip-action">评论</span>
+              <span class="tooltip-action">点赞</span>
+              <span class="tooltip-action">踩</span>
+              <span class="tooltip-action">搜索</span>
+              <span class="tooltip-action">趋势</span>
+              <span class="tooltip-action">关注</span>
+              <span class="tooltip-action">屏蔽</span>
+              <span class="tooltip-action">刷新</span>
+              <span class="tooltip-action">空闲</span>
             </div>
           </div>
         </div>
@@ -97,7 +97,7 @@
           @click="handleNextStep"
         >
           <span v-if="isGeneratingReport" class="loading-spinner-small"></span>
-          {{ isGeneratingReport ? '开始中...' : '开始生成报告' }} 
+          {{ isGeneratingReport ? '开始中...' : '生成分析报告' }} 
           <span v-if="!isGeneratingReport" class="arrow-icon">→</span>
         </button>
       </div>
@@ -108,7 +108,7 @@
       <!-- Timeline Header -->
       <div class="timeline-header" v-if="allActions.length > 0">
         <div class="timeline-stats">
-          <span class="total-count">TOTAL EVENTS: <span class="mono">{{ allActions.length }}</span></span>
+          <span class="total-count">总事件数: <span class="mono">{{ allActions.length }}</span></span>
           <span class="platform-breakdown">
             <span class="breakdown-item twitter">
               <svg class="mini-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
@@ -170,7 +170,7 @@
                   <div v-if="action.action_args?.original_content" class="quoted-block">
                     <div class="quote-header">
                       <svg class="icon-small" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                      <span class="quote-label">@{{ action.action_args.original_author_name || 'User' }}</span>
+                      <span class="quote-label">@{{ action.action_args.original_author_name || '用户' }}</span>
                     </div>
                     <div class="quote-text">
                       {{ truncateContent(action.action_args.original_content, 150) }}
@@ -182,7 +182,7 @@
                 <template v-if="action.action_type === 'REPOST'">
                   <div class="repost-info">
                     <svg class="icon-small" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-                    <span class="repost-label">Reposted from @{{ action.action_args?.original_author_name || 'User' }}</span>
+                    <span class="repost-label">转发自 @{{ action.action_args?.original_author_name || '用户' }}</span>
                   </div>
                   <div v-if="action.action_args?.original_content" class="repost-content">
                     {{ truncateContent(action.action_args.original_content, 200) }}
@@ -193,7 +193,7 @@
                 <template v-if="action.action_type === 'LIKE_POST'">
                   <div class="like-info">
                     <svg class="icon-small filled" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                    <span class="like-label">Liked @{{ action.action_args?.post_author_name || 'User' }}'s post</span>
+                    <span class="like-label">点赞了 @{{ action.action_args?.post_author_name || '用户' }} 的帖子</span>
                   </div>
                   <div v-if="action.action_args?.post_content" class="liked-content">
                     "{{ truncateContent(action.action_args.post_content, 120) }}"
@@ -215,7 +215,7 @@
                 <template v-if="action.action_type === 'SEARCH_POSTS'">
                   <div class="search-info">
                     <svg class="icon-small" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <span class="search-label">Search Query:</span>
+                    <span class="search-label">搜索查询:</span>
                     <span class="search-query">"{{ action.action_args?.query || '' }}"</span>
                   </div>
                 </template>
@@ -224,7 +224,7 @@
                 <template v-if="action.action_type === 'FOLLOW'">
                   <div class="follow-info">
                     <svg class="icon-small" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-                    <span class="follow-label">Followed @{{ action.action_args?.target_user || action.action_args?.user_id || 'User' }}</span>
+                    <span class="follow-label">关注了 @{{ action.action_args?.target_user || action.action_args?.user_id || '用户' }}</span>
                   </div>
                 </template>
 
@@ -233,7 +233,7 @@
                   <div class="vote-info">
                     <svg v-if="action.action_type === 'UPVOTE_POST'" class="icon-small" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
                     <svg v-else class="icon-small" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    <span class="vote-label">{{ action.action_type === 'UPVOTE_POST' ? 'Upvoted' : 'Downvoted' }} Post</span>
+                    <span class="vote-label">{{ action.action_type === 'UPVOTE_POST' ? '赞' : '踩' }}了这个帖子</span>
                   </div>
                   <div v-if="action.action_args?.post_content" class="voted-content">
                     "{{ truncateContent(action.action_args.post_content, 120) }}"
@@ -244,7 +244,7 @@
                 <template v-if="action.action_type === 'DO_NOTHING'">
                   <div class="idle-info">
                     <svg class="icon-small" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    <span class="idle-label">Action Skipped</span>
+                    <span class="idle-label">跳过行动</span>
                   </div>
                 </template>
 
@@ -401,7 +401,7 @@ const doStartSimulation = async () => {
 
     if (props.maxRounds) {
       params.max_rounds = props.maxRounds
-      addLog(`Set max simulation rounds: ${props.maxRounds}`)
+      addLog(`设置最大模拟轮数: ${props.maxRounds}`)
     }
 
     addLog('动态图更新模式已启用')
@@ -499,12 +499,12 @@ const fetchRunStatus = async () => {
 
       // Detect round changes for each platform and output logs
       if (data.twitter_current_round > prevTwitterRound.value) {
-        addLog(`[Info Plaza] R${data.twitter_current_round}/${data.total_rounds} | T:${data.twitter_simulated_hours || 0}h | A:${data.twitter_actions_count}`)
+        addLog(`[广场/信息流] 第${data.twitter_current_round}轮/共${data.total_rounds}轮 | T:${data.twitter_simulated_hours || 0}小时 | A:${data.twitter_actions_count}`)
         prevTwitterRound.value = data.twitter_current_round
       }
 
       if (data.reddit_current_round > prevRedditRound.value) {
-        addLog(`[Topic Community] R${data.reddit_current_round}/${data.total_rounds} | T:${data.reddit_simulated_hours || 0}h | A:${data.reddit_actions_count}`)
+        addLog(`[话题/社区] 第${data.reddit_current_round}轮/共${data.total_rounds}轮 | T:${data.reddit_simulated_hours || 0}小时 | A:${data.reddit_actions_count}`)
         prevRedditRound.value = data.reddit_current_round
       }
 
@@ -526,7 +526,7 @@ const fetchRunStatus = async () => {
       }
     }
   } catch (err) {
-    console.warn('Failed to fetch run status:', err)
+    console.warn('获取运行状态失败:', err)
   }
 }
 
@@ -584,26 +584,26 @@ const fetchRunStatusDetail = async () => {
       // New actions will be appended at the bottom
     }
   } catch (err) {
-    console.warn('Failed to fetch detailed status:', err)
+    console.warn('获取详细状态失败:', err)
   }
 }
 
 // Helpers
 const getActionTypeLabel = (type) => {
   const labels = {
-    'CREATE_POST': 'POST',
-    'REPOST': 'REPOST',
-    'LIKE_POST': 'LIKE',
-    'CREATE_COMMENT': 'COMMENT',
-    'LIKE_COMMENT': 'LIKE',
-    'DO_NOTHING': 'IDLE',
-    'FOLLOW': 'FOLLOW',
-    'SEARCH_POSTS': 'SEARCH',
-    'QUOTE_POST': 'QUOTE',
-    'UPVOTE_POST': 'UPVOTE',
-    'DOWNVOTE_POST': 'DOWNVOTE'
+    'CREATE_POST': '发布',
+    'REPOST': '转发',
+    'LIKE_POST': '点赞',
+    'CREATE_COMMENT': '评论',
+    'LIKE_COMMENT': '点赞',
+    'DO_NOTHING': '空闲',
+    'FOLLOW': '关注',
+    'SEARCH_POSTS': '搜索',
+    'QUOTE_POST': '引用',
+    'UPVOTE_POST': '赞',
+    'DOWNVOTE_POST': '踩'
   }
-  return labels[type] || type || 'UNKNOWN'
+  return labels[type] || type || '未知'
 }
 
 const getActionTypeClass = (type) => {

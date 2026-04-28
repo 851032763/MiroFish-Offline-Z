@@ -85,7 +85,7 @@
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
           <div class="action-bar-text">
-            <span class="action-bar-title">Interactive Tools</span>
+            <span class="action-bar-title">互动工具</span>
             <span class="action-bar-subtitle mono">{{ profiles.length }} 个智能体可用</span>
           </div>
         </div>
@@ -173,7 +173,7 @@
                   </div>
                   <div class="tool-content">
                     <div class="tool-name">深度归因分析</div>
-                    <div class="tool-desc">Aligns real-world seed data with simulation environment state, combines Global/Local Memory mechanisms, provides cross-temporal deep attribution analysis</div>
+                    <div class="tool-desc">对齐现实种子数据与模拟环境状态，结合全局/局部记忆机制，提供跨时序深度归因分析</div>
                   </div>
                 </div>
                 <div class="tool-item tool-blue">
@@ -235,7 +235,7 @@
             </div>
             <div v-if="showFullProfile && selectedAgent.bio" class="profile-card-body">
               <div class="profile-card-bio">
-                <div class="profile-card-label">Introduction</div>
+                <div class="profile-card-label">简介</div>
                 <p>{{ selectedAgent.bio }}</p>
               </div>
             </div>
@@ -376,8 +376,8 @@
           <!-- Survey Results -->
           <div v-if="surveyResults.length > 0" class="survey-results">
             <div class="results-header">
-              <span class="results-title">Survey Results</span>
-              <span class="results-count">{{ surveyResults.length }} replies</span>
+              <span class="results-title">调查结果</span>
+              <span class="results-count">{{ surveyResults.length }} 条回复</span>
             </div>
             <div class="results-list">
               <div 
@@ -389,7 +389,7 @@
                   <div class="result-avatar">{{ (result.agent_name || 'A')[0] }}</div>
                   <div class="result-info">
                     <span class="result-name">{{ result.agent_name }}</span>
-                    <span class="result-role">{{ result.profession || 'Unknown profession' }}</span>
+                    <span class="result-role">{{ result.profession || '未知职业' }}</span>
                   </div>
                 </div>
                 <div class="result-question">
@@ -697,7 +697,7 @@ const sendToReportAgent = async (message) => {
   if (res.success && res.data) {
     chatHistory.value.push({
       role: 'assistant',
-      content: res.data.response || res.data.answer || 'No response',
+      content: res.data.response || res.data.answer || '无回复',
       timestamp: new Date().toISOString()
     })
     addLog('报告Agent已回复')
@@ -763,7 +763,7 @@ const sendToAgent = async (message) => {
       })
       addLog(`${selectedAgent.value.username} 已回复`)
     } else {
-      throw new Error('No response data')
+      throw new Error('无回复数据')
     }
   } else {
     throw new Error(res.error || '请求失败')
@@ -830,20 +830,20 @@ const submitSurvey = async () => {
         const agent = profiles.value[agentIdx]
 
         // Prefer reddit platform response, then twitter
-        let responseContent = 'No response'
+        let responseContent = '无回复'
 
         if (typeof resultsDict === 'object' && !Array.isArray(resultsDict)) {
           const redditKey = `reddit_${agentIdx}`
           const twitterKey = `twitter_${agentIdx}`
           const agentResult = resultsDict[redditKey] || resultsDict[twitterKey]
           if (agentResult) {
-            responseContent = agentResult.response || agentResult.answer || 'No response'
+            responseContent = agentResult.response || agentResult.answer || '无回复'
           }
         } else if (Array.isArray(resultsDict)) {
           // Compatible with array format
           const matchedResult = resultsDict.find(r => r.agent_id === agentIdx)
           if (matchedResult) {
-            responseContent = matchedResult.response || matchedResult.answer || 'No response'
+            responseContent = matchedResult.response || matchedResult.answer || '无回复'
           }
         }
 
