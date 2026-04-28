@@ -552,8 +552,8 @@ const formatTime = (timestamp) => {
 }
 
 const renderMarkdown = (content) => {
-  if (!content) return ''
-  
+  if (!content || typeof content !== 'string') return ''
+
   let processedContent = content.replace(/^##\s+.+\n+/, '')
   let html = processedContent.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>')
   html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
@@ -695,9 +695,15 @@ const sendToReportAgent = async (message) => {
   })
 
   if (res.success && res.data) {
+    // 支持嵌套格式: { response: { response, sources, tool_calls } }
+    const responseData = res.data.response
+    const responseText = typeof responseData === 'string'
+      ? responseData
+      : (responseData?.response || responseData?.answer || '无回复')
+
     chatHistory.value.push({
       role: 'assistant',
-      content: res.data.response || res.data.answer || '无回复',
+      content: responseText,
       timestamp: new Date().toISOString()
     })
     addLog('报告Agent已回复')
@@ -748,11 +754,18 @@ const sendToAgent = async (message) => {
       const twitterKey = `twitter_${agentId}`
       const agentResult = resultsDict[redditKey] || resultsDict[twitterKey] || Object.values(resultsDict)[0]
       if (agentResult) {
-        responseContent = agentResult.response || agentResult.answer
+        // 支持嵌套格式: { response: { response, sources, tool_calls } }
+        const rawResponse = agentResult.response || agentResult.answer
+        responseContent = typeof rawResponse === 'string'
+          ? rawResponse
+          : (rawResponse?.response || rawResponse?.answer)
       }
     } else if (Array.isArray(resultsDict) && resultsDict.length > 0) {
       // Compatible with array format
-      responseContent = resultsDict[0].response || resultsDict[0].answer
+      const rawResponse = resultsDict[0].response || resultsDict[0].answer
+      responseContent = typeof rawResponse === 'string'
+        ? rawResponse
+        : (rawResponse?.response || rawResponse?.answer)
     }
 
     if (responseContent) {
