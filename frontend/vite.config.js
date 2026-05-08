@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    allowedHosts: ['esa.11cub.com', 'mirofish.11cub.com'],
     proxy: {
       '/api': {
         target: 'http://localhost:5001',
